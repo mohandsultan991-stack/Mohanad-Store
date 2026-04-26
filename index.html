@@ -8,30 +8,36 @@
         :root { --main: #000; --bg: #ffffff; }
         body { font-family: 'Arial Black', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: var(--main); }
         
+        /* هيدر البراند */
         header { background: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #000; position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; font-size: 1.3rem; font-weight: 900; letter-spacing: -1px; }
-        .cart-icon { position: relative; font-size: 1.1rem; background: #eee; padding: 5px 12px; border-radius: 5px; border: 2px solid #000; }
-        
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-        .card { background: #fff; position: relative; border: 1px solid #ddd; }
-        .card img { width: 100%; height: 220px; object-fit: cover; background: #fafafa; }
+        header h1 { margin: 0; font-size: 1.4rem; font-weight: 900; letter-spacing: -1px; text-align: right; flex: 1; }
+        .cart-icon { font-size: 1.2rem; background: #f3f4f6; padding: 5px 15px; border-radius: 5px; border: 1.5px solid #000; position: relative; }
+        #cartCount { background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; position: absolute; top: -10px; right: -10px; }
+
+        /* المنتجات 2x2 */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        .card { background: #fff; position: relative; border: 1px solid #eee; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 240px; object-fit: cover; background: #fafafa; }
         
         .card-info { padding: 10px; text-align: right; }
-        .card-info h3 { font-size: 0.8rem; margin: 5px 0; font-weight: bold; height: 32px; overflow: hidden; }
-        .price { font-size: 1rem; font-weight: 900; }
+        .card-info h3 { font-size: 0.85rem; margin: 5px 0; font-weight: bold; height: 35px; overflow: hidden; }
+        .price { font-size: 1.1rem; font-weight: 900; margin-bottom: 8px; }
 
-        .color-selector { display: flex; gap: 5px; margin: 8px 0; min-height: 20px; }
-        .dot { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #ccc; cursor: pointer; background-size: cover; }
-        
-        .size-grid { display: flex; gap: 4px; margin-bottom: 10px; }
-        .s-btn { border: 1px solid #ddd; padding: 5px; font-size: 0.7rem; cursor: pointer; flex: 1; text-align: center; font-weight: bold; }
-        .s-btn.active { background: #000; color: #fff; }
+        /* الألوان (الصور المصغرة) */
+        .color-dots { display: flex; gap: 6px; margin: 10px 0; min-height: 25px; }
+        .dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #ccc; cursor: pointer; background-size: cover; background-position: center; }
 
-        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; }
+        /* المقاسات الكبيرة فقط */
+        .size-grid { display: flex; gap: 5px; margin-bottom: 12px; }
+        .s-btn { border: 1px solid #ddd; padding: 6px; font-size: 0.75rem; cursor: pointer; flex: 1; text-align: center; font-weight: bold; transition: 0.2s; }
+        .s-btn.active { background: #000; color: #fff; border-color: #000; }
+
+        .buy-now { width: 100%; background: #000; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
         
+        /* لوحة التحكم */
         #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 4px solid #000; z-index: 2000; width: 85%; max-width: 350px; }
         #adminPanel input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #000; box-sizing: border-box; }
-        .del-mark { display: none; position: absolute; top: 5px; left: 5px; background: red; color: white; border: none; padding: 5px 10px; font-size: 12px; cursor: pointer; font-weight: bold; z-index: 10; }
+        .del-btn { display: none; position: absolute; top: 5px; left: 5px; background: red; color: white; border: none; padding: 5px 10px; font-size: 12px; cursor: pointer; font-weight: bold; z-index: 10; }
 
         .checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 40px; text-decoration: none; font-weight: bold; display: none; z-index: 1000; border: 2px solid #fff; }
     </style>
@@ -49,23 +55,22 @@
     <h3 style="margin-top:0">إضافة منتج (مهند ستور) 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
     <input type="number" id="pPrice" placeholder="السعر">
-    <input type="text" id="pImg" placeholder="رابط الصورة (او روابط بفاصلة)">
-    <button onclick="uploadItem()" style="width:100%; background:black; color:white; padding:12px; border:none; cursor:pointer; font-weight:bold;">نشر المنتج الآن</button>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إغلاق</button>
+    <input type="text" id="pImg" placeholder="رابط الصور (افصل بفاصلة , للالوان)">
+    <button onclick="uploadItem()" style="width:100%; background:black; color:white; padding:12px; border:none; cursor:pointer; font-weight:bold;">نشر المنتج</button>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إغلاق</button>
 </div>
 
-<a href="#" id="waLink" class="checkout-bar" target="_blank">إتمام الطلب عبر واتساب</a>
+<a href="#" id="waLink" class="checkout-bar" target="_blank">إتمام الطلب (واتساب)</a>
 
 <script>
-    // الرابط الموحد لكل العمليات
-    const dbBase = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
+    const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
     const myPhone = "201044667187"; 
     let cart = [];
 
     window.show = function() {
         document.getElementById('adminPanel').style.display = 'block';
-        document.querySelectorAll('.del-mark').forEach(b => b.style.display = 'block');
-        return "تم فتح لوحة التحكم بنجاح ✅";
+        document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'block');
+        return "تم تفعيل وضع التعديل يا مهند ✅";
     };
 
     async function uploadItem() {
@@ -74,59 +79,56 @@
         const imgs = document.getElementById('pImg').value;
         if(!title || !price || !imgs) return alert("املا البيانات!");
 
-        await fetch(`${dbBase}.json`, {
+        await fetch(`${dbURL}.json`, {
             method: 'POST',
             body: JSON.stringify({ title, price: parseInt(price), imgs: imgs })
         });
-        alert("تمت الإضافة!");
+        alert("✅ تمت الإضافة بنجاح!");
         location.reload();
     }
 
     async function deleteItem(id) {
-        if(confirm("هل تريد مسح هذا المنتج؟")) {
-            await fetch(`${dbBase}/${id}.json`, { method: 'DELETE' });
+        if(confirm("مسح هذا المنتج؟")) {
+            await fetch(`${dbURL}/${id}.json`, { method: 'DELETE' });
             location.reload();
         }
     }
 
-    function changeView(id, url) { document.getElementById(`img-${id}`).src = url; }
+    function changeImg(id, url) { document.getElementById(`img-${id}`).src = url; }
 
     async function loadStore() {
-        try {
-            const res = await fetch(`${dbBase}.json`);
-            const data = await res.json();
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = "";
+        const res = await fetch(`${dbURL}.json`);
+        const data = await res.json();
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = "";
 
-            if(!data) {
-                grid.innerHTML = "<p style='grid-column:1/-1;text-align:center'>المتجر فاضي.. ضيف أول منتج!</p>";
-                return;
-            }
+        if(!data) {
+            grid.innerHTML = "<p style='grid-column:1/-1;text-align:center'>المتجر فارغ.</p>";
+            return;
+        }
 
-            for (let id in data) {
-                const p = data[id];
-                // معالجة ذكية للروابط (لو رابط واحد أو أكتر)
-                const imgArray = p.imgs ? p.imgs.split(',') : (p.img ? [p.img] : []);
-                let dots = imgArray.length > 1 ? imgArray.map(url => `<div class="dot" style="background-image:url('${url.trim()}')" onclick="changeView('${id}', '${url.trim()}')"></div>`).join('') : "";
-                
-                grid.innerHTML += `
-                    <div class="card">
-                        <button class="del-mark" onclick="deleteItem('${id}')">X</button>
-                        <img id="img-${id}" src="${imgArray[0] ? imgArray[0].trim() : ''}">
-                        <div class="card-info">
-                            <h3>${p.title}</h3>
-                            <div class="price">${p.price} EGP</div>
-                            <div class="color-selector">${dots}</div>
-                            <div class="size-grid">
-                                <div class="s-btn sz-${id}" onclick="setSize('${id}','S',this)">S</div>
-                                <div class="s-btn sz-${id}" onclick="setSize('${id}','M',this)">M</div>
-                                <div class="s-btn sz-${id}" onclick="setSize('${id}','L',this)">L</div>
-                            </div>
-                            <button class="buy-btn" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة</button>
+        for (let id in data) {
+            const p = data[id];
+            const imgArray = p.imgs ? p.imgs.split(',') : [];
+            let dots = imgArray.length > 1 ? imgArray.map(url => `<div class="dot" style="background-image:url('${url.trim()}')" onclick="changeImg('${id}', '${url.trim()}')"></div>`).join('') : "";
+            
+            grid.innerHTML += `
+                <div class="card">
+                    <button class="del-btn" onclick="deleteItem('${id}')">X</button>
+                    <img id="img-${id}" src="${imgArray[0] ? imgArray[0].trim() : ''}">
+                    <div class="card-info">
+                        <h3>${p.title}</h3>
+                        <div class="price">${p.price} EGP</div>
+                        <div class="color-dots">${dots}</div>
+                        <div class="size-grid">
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}','L',this)">L</div>
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}','XL',this)">XL</div>
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}','XXL',this)">XXL</div>
                         </div>
-                    </div>`;
-            }
-        } catch(e) { console.error(e); }
+                        <button class="buy-now" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة</button>
+                    </div>
+                </div>`;
+        }
     }
 
     function setSize(id, size, btn) {
@@ -142,7 +144,7 @@
         document.getElementById('cartCount').innerText = cart.length;
         document.getElementById('waLink').style.display = "block";
         
-        let msg = encodeURIComponent(`طلب جديد من MOHANAD STORE:\n${cart.map(i=>`- ${i.name} (${i.size})`).join('\n')}\nإجمالي: ${cart.reduce((s,i)=>s+i.price,0)} EGP`);
+        let msg = encodeURIComponent(`طلب جديد من MOHANAD STORE:\n${cart.map(i=>`- ${i.name} (مقاس: ${i.size})`).join('\n')}\nإجمالي: ${cart.reduce((s,i)=>s+i.price,0)} EGP`);
         document.getElementById('waLink').href = `https://wa.me/${myPhone}?text=${msg}`;
     }
 
