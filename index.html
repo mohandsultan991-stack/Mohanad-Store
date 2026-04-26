@@ -11,32 +11,21 @@
         header h1 { color: var(--primary); margin: 0; user-select: none; font-size: 1.5rem; }
         .cart-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; }
         .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
-        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; position: relative; }
+        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
         .card img { width: 100%; height: 300px; object-fit: cover; }
-        .card-info { padding: 15px; text-align: center; }
+        .card-info { padding: 15px; text-align: center; flex-grow: 1; }
         .price { font-size: 1.4rem; color: var(--primary); font-weight: bold; margin: 10px 0; }
+        
+        /* شكل قائمة المقاسات */
+        .size-selector { width: 100%; padding: 8px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid var(--primary); margin-bottom: 10px; cursor: pointer; }
+
         .btn-buy { width: 100%; background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-buy:hover { background: var(--primary); color: white; }
         
-        /* زر المسح السري */
-        .delete-btn { 
-            display: none; 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: var(--danger); 
-            color: white; 
-            border: none; 
-            padding: 8px 12px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold;
-            z-index: 10;
-        }
+        .delete-btn { display: none; position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 10; }
 
         #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.9); z-index: 2000; width: 90%; max-width: 400px; border: 1px solid var(--primary); }
         #adminPanel input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        
         .checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); padding: 15px 30px; border-radius: 50px; display: none; color: white; font-weight: bold; text-decoration: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     </style>
 </head>
@@ -65,18 +54,15 @@
     const myPhone = "201016629202"; 
     let cart = [];
 
-    // فتح اللوحة وإظهار أزرار المسح
     window.show = function() {
         document.getElementById('adminPanel').style.display = 'block';
-        const delBtns = document.querySelectorAll('.delete-btn');
-        delBtns.forEach(btn => btn.style.display = 'block');
-        return "أهلاً يا مهند.. وضع التعديل والمسح نشط الآن ✅";
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'block');
+        return "وضع التعديل نشط ✅";
     };
 
     function hideAdmin() {
         document.getElementById('adminPanel').style.display = 'none';
-        const delBtns = document.querySelectorAll('.delete-btn');
-        delBtns.forEach(btn => btn.style.display = 'none');
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
     }
 
     async function uploadProduct() {
@@ -85,14 +71,12 @@
         const img = document.getElementById('pImg').value;
         if(!title || !price || !img) return alert("املا البيانات!");
 
-        const product = { title, price: parseInt(price), img };
-        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify(product) });
+        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price: parseInt(price), img }) });
         location.reload();
     }
 
-    // دالة المسح
     async function deleteProduct(id) {
-        if(confirm("هل تريد مسح هذا المنتج نهائياً؟")) {
+        if(confirm("مسح المنتج؟")) {
             await fetch(`${dbURL}/${id}.json`, { method: 'DELETE' });
             location.reload();
         }
@@ -102,7 +86,7 @@
         const res = await fetch(`${dbURL}.json`);
         const data = await res.json();
         const grid = document.getElementById('productsGrid');
-        grid.innerHTML = data ? "" : "<p style='grid-column:1/-1; text-align:center'>المحل فاضي..</p>";
+        grid.innerHTML = data ? "" : "<p style='text-align:center; grid-column:1/-1'>المحل فاضي..</p>";
         
         for (let id in data) {
             const p = data[id];
@@ -113,18 +97,34 @@
                     <div class="card-info">
                         <h3>${p.title}</h3>
                         <p class="price">${p.price} ج.م</p>
-                        <button class="btn-buy" onclick="addToCart('${p.title}', ${p.price})">إضافة للسلة +</button>
+                        
+                        <select id="size-${id}" class="size-selector">
+                            <option value="S">Small (S)</option>
+                            <option value="M">Medium (M)</option>
+                            <option value="L">Large (L)</option>
+                            <option value="XL">X-Large (XL)</option>
+                            <option value="XXL">XX-Large (XXL)</option>
+                        </select>
+
+                        <button class="btn-buy" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة +</button>
                     </div>
                 </div>`;
         }
     }
 
-    function addToCart(t, p) {
-        cart.push({t, p});
+    function addToCart(t, p, id) {
+        // سحب المقاس المختار
+        const selectedSize = document.getElementById(`size-${id}`).value;
+        
+        cart.push({t, p, s: selectedSize});
         document.getElementById('cartCount').innerText = cart.length;
         document.getElementById('whatsappBtn').style.display = "block";
-        let total = cart.reduce((s, i) => s + i.p, 0);
-        let msg = encodeURIComponent("طلب جديد من مهند ستور:\n" + cart.map(i => `- ${i.t}`).join("\n") + "\nالمجموع: " + total);
+        
+        let total = cart.reduce((total, item) => total + item.p, 0);
+        let msg = encodeURIComponent("طلب جديد من MOHANAD STORE:\n\n" + 
+                  cart.map(i => `- ${i.t} (مقاس: ${i.s}) [${i.p} ج.م]`).join("\n") + 
+                  "\n\nالمجموع الكلي: " + total + " ج.م");
+                  
         document.getElementById('whatsappBtn').href = `https://wa.me/${myPhone}?text=${msg}`;
     }
 
