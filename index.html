@@ -5,54 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOHANAD STORE</title>
     <style>
-        :root { --primary: #e11d48; --bg: #ffffff; --text: #111827; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-        header { background: #fff; padding: 20px; text-align: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; font-size: 1.4rem; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; }
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; max-width: 1200px; margin: auto; }
-        .card { background: #fff; position: relative; border: 1px solid #f3f4f6; padding-bottom: 10px; }
-        .card img { width: 100%; height: 220px; object-fit: cover; background: #f9fafb; }
+        :root { --primary: #000; --bg: #ffffff; --text: #000; }
+        body { font-family: 'Arial Black', Gadget, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
+        
+        /* الهيدر الاحترافي */
+        header { background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; }
+        header h1 { margin: 0; font-size: 1.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+        .cart-icon { position: relative; font-size: 1.2rem; cursor: pointer; }
+        #cartCount { background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; position: absolute; top: -10px; right: -10px; }
+
+        /* جريد المنتجين جمب بعض */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .card { background: #fff; position: relative; border: 1px solid #eee; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        
         .card-info { padding: 10px; text-align: right; }
-        .price { font-size: 1rem; color: #000; font-weight: 800; }
-        .color-dots { display: flex; gap: 6px; margin: 8px 0; }
-        .dot { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #e5e7eb; cursor: pointer; background-size: cover; }
-        .size-grid { display: flex; gap: 4px; margin: 10px 0; }
-        .size-btn { border: 1px solid #e5e7eb; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; min-width: 30px; text-align: center; }
-        .size-btn.active { background: #000; color: #fff; }
-        .buy-now { width: 100%; background: #000; color: #fff; border: none; padding: 10px; font-weight: bold; cursor: pointer; }
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 2px solid #000; z-index: 2000; width: 85%; max-width: 350px; }
-        #adminPanel input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        .delete-mark { display: none; position: absolute; top: 5px; left: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; z-index: 20; }
-        .checkout-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 30px; text-decoration: none; font-weight: bold; display: none; z-index: 1000; }
+        .card-info h3 { font-size: 0.8rem; margin: 5px 0; font-weight: bold; color: #333; height: 32px; overflow: hidden; }
+        .price { font-size: 0.9rem; font-weight: 900; margin-bottom: 8px; }
+
+        /* المقاسات */
+        .size-options { display: flex; gap: 5px; margin-bottom: 10px; }
+        .s-btn { border: 1px solid #ddd; padding: 5px; font-size: 0.7rem; cursor: pointer; flex: 1; text-align: center; font-weight: bold; }
+        .s-btn.active { background: #000; color: #fff; border-color: #000; }
+
+        .add-to-cart { width: 100%; background: #000; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+        
+        /* لوحة التحكم المخفية */
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 2000; width: 85%; max-width: 350px; }
+        #adminPanel input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #000; box-sizing: border-box; font-family: sans-serif; }
+        .del-btn { display: none; position: absolute; top: 5px; left: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; z-index: 10; cursor: pointer; }
+
+        /* بار إتمام الطلب */
+        .checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 40px; text-decoration: none; font-weight: bold; display: none; z-index: 1000; border-radius: 0; }
     </style>
 </head>
 <body>
 
-<header><h1>MOHANAD STORE</h1></header>
-<div class="container" id="productsGrid"><p style="text-align: center; grid-column: 1/-1;">جاري التحميل...</p></div>
+<header>
+    <h1>MOHANAD STORE</h1>
+    <div class="cart-icon">🛒 <span id="cartCount">0</span></div>
+</header>
 
-<div id="adminPanel">
-    <h3>إضافة منتج 👕</h3>
-    <input type="text" id="pTitle" placeholder="الاسم">
-    <input type="number" id="pPrice" placeholder="السعر">
-    <input type="text" id="img1" placeholder="رابط الصورة 1">
-    <input type="text" id="img2" placeholder="رابط الصورة 2">
-    <button onclick="uploadProduct()" style="width:100%; background:black; color:white; padding:12px; cursor:pointer;">حفظ</button>
-    <button onclick="closeAdmin()" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إلغاء</button>
+<div class="container" id="productsGrid">
+    <p style="grid-column: 1/-1; text-align: center;">جاري تحميل المنتجات...</p>
 </div>
 
-<a href="#" id="whatsappLink" class="checkout-btn" target="_blank">إتمام الطلب عبر واتساب</a>
+<div id="adminPanel">
+    <h2 style="margin-top:0">لوحة التاجر ⚡</h2>
+    <input type="text" id="pTitle" placeholder="اسم المنتج">
+    <input type="number" id="pPrice" placeholder="السعر">
+    <input type="text" id="pImg" placeholder="رابط الصورة">
+    <button onclick="uploadProduct()" style="width:100%; background:black; color:white; padding:12px; border:none; cursor:pointer; font-weight:bold;">نشر الآن</button>
+    <button onclick="closeAdmin()" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إلغاء</button>
+</div>
+
+<a href="#" id="waLink" class="checkout-bar" target="_blank">إتمام الطلب (واتساب)</a>
 
 <script>
-    // الرابط النهائي الصحيح
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products.json";
     const myPhone = "201044667187"; 
     let cart = [];
 
+    // السر: اكتب show() في الكونسول
     window.show = function() {
         document.getElementById('adminPanel').style.display = 'block';
-        document.querySelectorAll('.delete-mark').forEach(el => el.style.display = 'block');
-        return "لوحة التحكم مفتوحة";
+        document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'block');
+        return "أهلاً يا مهند! وضع التعديل جاهز.";
     };
 
     function closeAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
@@ -60,84 +78,71 @@
     async function uploadProduct() {
         const title = document.getElementById('pTitle').value;
         const price = document.getElementById('pPrice').value;
-        const img1 = document.getElementById('img1').value;
-        const img2 = document.getElementById('img2').value;
-        const imgs = [img1, img2].filter(u => u.trim() !== "");
+        const img = document.getElementById('pImg').value;
 
-        if(!title || !price || imgs.length === 0) {
-            alert("املا البيانات كاملة يا مهند!");
-            return;
-        }
+        if(!title || !price || !img) return alert("كمل البيانات يا بطل!");
 
-        try {
-            console.log("جاري الإرسال...");
-            const response = await fetch(dbURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, price: parseInt(price), images: imgs })
-            });
-
-            if (response.ok) {
-                alert("✅ تم إضافة المنتج بنجاح!");
-                location.reload();
-            } else {
-                const errorData = await response.text();
-                alert("❌ فشل في الإضافة: " + errorData);
-            }
-        } catch (error) {
-            alert("❌ عطل في الاتصال: " + error.message);
-        }
+        await fetch(dbURL, {
+            method: 'POST',
+            body: JSON.stringify({ title, price: parseInt(price), img: img })
+        });
+        alert("✅ تمت الإضافة بنجاح!");
+        location.reload();
     }
 
     async function deleteItem(id) {
-        if(confirm("مسح؟")) {
+        if(confirm("مسح المنتج؟")) {
             await fetch(`https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products/${id}.json`, { method: 'DELETE' });
             location.reload();
         }
     }
 
-    function switchImg(id, url) { document.getElementById(`img-main-${id}`).src = url; }
     function setSize(id, size, btn) {
-        document.querySelectorAll(`.btns-${id}`).forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.sz-${id}`).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
 
     async function loadStore() {
-        try {
-            const res = await fetch(dbURL);
-            const data = await res.json();
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = "";
-            if(!data) { grid.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>المتجر فارغ.</p>"; return; }
-            for (let id in data) {
-                const p = data[id];
-                let dots = p.images.map(url => `<div class="dot" style="background-image:url('${url}')" onclick="switchImg('${id}', '${url}')"></div>`).join('');
-                grid.innerHTML += `<div class="card">
-                    <button class="delete-mark" onclick="deleteItem('${id}')">X</button>
-                    <img id="img-main-${id}" src="${p.images[0]}">
+        const res = await fetch(dbURL);
+        const data = await res.json();
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = data ? "" : "<p style='grid-column:1/-1; text-align:center;'>المتجر فاضي حالياً.</p>";
+
+        for (let id in data) {
+            const p = data[id];
+            grid.innerHTML += `
+                <div class="card">
+                    <button class="del-btn" onclick="deleteItem('${id}')">X</button>
+                    <img src="${p.img}">
                     <div class="card-info">
                         <h3>${p.title}</h3>
                         <div class="price">${p.price} EGP</div>
-                        <div class="color-dots">${dots}</div>
-                        <div class="size-grid">
-                            <div class="size-btn btns-${id}" onclick="setSize('${id}', 'S', this)">S</div>
-                            <div class="size-btn btns-${id}" onclick="setSize('${id}', 'M', this)">M</div>
-                            <div class="size-btn btns-${id}" onclick="setSize('${id}', 'L', this)">L</div>
+                        <div class="size-options">
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}', 'S', this)">S</div>
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}', 'M', this)">M</div>
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}', 'L', this)">L</div>
+                            <div class="s-btn sz-${id}" onclick="setSize('${id}', 'XL', this)">XL</div>
                         </div>
-                        <button class="buy-now" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة</button>
-                    </div></div>`;
-            }
-        } catch (e) { console.log("خطأ في التحميل"); }
+                        <button class="add-to-cart" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة</button>
+                    </div>
+                </div>`;
+        }
     }
 
     function addToCart(name, price, id) {
-        const sizeBtn = document.querySelector(`.btns-${id}.active`);
-        if(!sizeBtn) return alert("اختار المقاس");
+        const sizeBtn = document.querySelector(`.sz-${id}.active`);
+        if(!sizeBtn) return alert("اختار المقاس الأول!");
+
         cart.push({name, price, size: sizeBtn.innerText});
-        document.getElementById('whatsappLink').style.display = "block";
-        let msg = encodeURIComponent(`طلب من المتجر:\n${cart.map(i=>`- ${i.name} (${i.size})`).join('\n')}`);
-        document.getElementById('whatsappLink').href = `https://wa.me/${myPhone}?text=${msg}`;
+        document.getElementById('cartCount').innerText = cart.length;
+        document.getElementById('waLink').style.display = "block";
+        
+        let total = cart.reduce((s, i) => s + i.price, 0);
+        let details = cart.map(i => `- ${i.name} (مقاس: ${i.size})`).join('\n');
+        let msg = encodeURIComponent(`طلب جديد من MOHANAD STORE:\n\n${details}\n\nالإجمالي: ${total} EGP`);
+        document.getElementById('waLink').href = `https://wa.me/${myPhone}?text=${msg}`;
     }
+
     loadStore();
 </script>
 </body>
