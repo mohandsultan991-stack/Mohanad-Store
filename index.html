@@ -3,128 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOHANAD STORE | المتجر الرسمي</title>
+    <title>MOHANAD STORE</title>
     <style>
-        :root { --primary: #22c55e; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --danger: #ef4444; }
+        :root { --primary: #e11d48; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --gray: #64748b; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-        header { background: #1e293b; padding: 20px; text-align: center; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        header h1 { color: var(--primary); margin: 0; user-select: none; font-size: 1.5rem; }
-        .cart-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 50px; font-weight: bold; }
-        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
-        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #334155; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 300px; object-fit: cover; }
-        .card-info { padding: 15px; text-align: center; flex-grow: 1; }
-        .price { font-size: 1.4rem; color: var(--primary); font-weight: bold; margin: 10px 0; }
+        header { background: #ffffff; padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        header h1 { color: #000; margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
         
-        /* شكل قائمة المقاسات */
-        .size-selector { width: 100%; padding: 8px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid var(--primary); margin-bottom: 10px; cursor: pointer; }
-
-        .btn-buy { width: 100%; background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-buy:hover { background: var(--primary); color: white; }
+        /* تصميم المنتجين جمب بعض */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; max-width: 1200px; margin: auto; }
+        .card { background: var(--card); border-radius: 0px; overflow: hidden; position: relative; transition: 0.3s; }
+        .card img { width: 100%; height: 250px; object-fit: cover; background: #f1f5f9; }
         
-        .delete-btn { display: none; position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 10; }
+        .card-info { padding: 10px; text-align: right; }
+        .card-info h3 { font-size: 0.9rem; margin: 5px 0; font-weight: 500; color: var(--gray); }
+        .price { font-size: 1rem; color: #000; font-weight: bold; margin-bottom: 10px; }
 
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.9); z-index: 2000; width: 90%; max-width: 400px; border: 1px solid var(--primary); }
-        #adminPanel input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        .checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); padding: 15px 30px; border-radius: 50px; display: none; color: white; font-weight: bold; text-decoration: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        /* تصميم المقاسات (مربعات) */
+        .size-container { display: flex; gap: 5px; margin: 10px 0; flex-wrap: wrap; }
+        .size-box { border: 1px solid #e2e8f0; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; background: #fff; color: #000; }
+        .size-box.active { border-color: #000; background: #f1f5f9; font-weight: bold; }
+
+        /* تصميم دوائر الألوان */
+        .color-container { display: flex; gap: 8px; margin-bottom: 10px; }
+        .color-dot { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
+        .color-dot:hover { transform: scale(1.2); }
+
+        .btn-buy { width: 100%; background: #000; color: #fff; border: none; padding: 10px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        
+        .delete-btn { display: none; position: absolute; top: 5px; right: 5px; background: rgba(225, 29, 72, 0.9); color: white; border: none; padding: 5px; border-radius: 3px; font-size: 10px; z-index: 10; }
+
+        /* لوحة التاجر المتطورة */
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.2); z-index: 2000; width: 90%; max-width: 400px; color: #000; border-top: 5px solid var(--primary); }
+        #adminPanel input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        .checkout-bar { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #000; padding: 12px 25px; border-radius: 5px; display: none; color: #fff; font-size: 0.9rem; text-decoration: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>MOHANAD STORE</h1>
-    <div class="cart-btn">🛒 <span id="cartCount">0</span></div>
 </header>
 
 <div class="container" id="productsGrid"></div>
 
 <div id="adminPanel">
-    <h2 style="color: var(--primary); margin-top:0">لوحة التاجر 🕵️‍♂️</h2>
+    <h3>لوحة التحكم الاحترافية 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
     <input type="number" id="pPrice" placeholder="السعر">
-    <input type="text" id="pImg" placeholder="رابط الصورة">
-    <button onclick="uploadProduct()" style="width:100%; background:var(--primary); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">إضافة المنتج</button>
-    <button onclick="hideAdmin()" style="width:100%; background:none; color:#94a3b8; border:none; margin-top:10px; cursor:pointer;">إغلاق اللوحة</button>
+    <input type="text" id="img1" placeholder="رابط الصورة 1 (الأساسية)">
+    <input type="text" id="img2" placeholder="رابط الصورة 2 (اختياري)">
+    <input type="text" id="img3" placeholder="رابط الصورة 3 (اختياري)">
+    <button onclick="uploadProduct()" style="width:100%; background:var(--primary); color:white; border:none; padding:12px; cursor:pointer;">نشر المنتج</button>
+    <button onclick="hideAdmin()" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إغلاق</button>
 </div>
 
-<a href="#" id="whatsappBtn" class="checkout-bar" target="_blank">إتمام الطلب عبر واتساب</a>
+<a href="#" id="whatsappBtn" class="checkout-bar" target="_blank">إرسال الطلب (واتساب)</a>
 
 <script>
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
-    const myPhone = "201044667187"; 
+    const myPhone = "201044667187"; // رقمك الجديد
     let cart = [];
 
     window.show = function() {
         document.getElementById('adminPanel').style.display = 'block';
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'block');
-        return "وضع التعديل نشط ✅";
+        document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'block');
+        return "أهلاً مهند، المتجر تحت أمرك!";
     };
 
     function hideAdmin() {
         document.getElementById('adminPanel').style.display = 'none';
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = 'none');
+        document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
     }
 
     async function uploadProduct() {
         const title = document.getElementById('pTitle').value;
         const price = document.getElementById('pPrice').value;
-        const img = document.getElementById('pImg').value;
-        if(!title || !price || !img) return alert("املا البيانات!");
+        const images = [document.getElementById('img1').value, document.getElementById('img2').value, document.getElementById('img3').value].filter(i => i !== "");
+        
+        if(!title || !price || images.length === 0) return alert("املا البيانات!");
 
-        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price: parseInt(price), img }) });
+        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price: parseInt(price), images }) });
         location.reload();
     }
 
     async function deleteProduct(id) {
-        if(confirm("مسح المنتج؟")) {
+        if(confirm("مسح؟")) {
             await fetch(`${dbURL}/${id}.json`, { method: 'DELETE' });
             location.reload();
         }
+    }
+
+    function changeImg(id, url) {
+        document.getElementById(`mainImg-${id}`).src = url;
+    }
+
+    function selectSize(id, size, el) {
+        document.querySelectorAll(`.size-group-${id}`).forEach(box => box.classList.remove('active'));
+        el.classList.add('active');
+        el.dataset.selected = size;
     }
 
     async function fetchProducts() {
         const res = await fetch(`${dbURL}.json`);
         const data = await res.json();
         const grid = document.getElementById('productsGrid');
-        grid.innerHTML = data ? "" : "<p style='text-align:center; grid-column:1/-1'>المحل فاضي..</p>";
+        grid.innerHTML = "";
         
         for (let id in data) {
             const p = data[id];
+            let colorDots = p.images.map(img => `<div class="color-dot" style="background: url('${img}'); background-size:cover" onclick="changeImg('${id}', '${img}')"></div>`).join('');
+            
             grid.innerHTML += `
                 <div class="card">
-                    <button class="delete-btn" onclick="deleteProduct('${id}')">مسح 🗑️</button>
-                    <img src="${p.img}">
+                    <button class="delete-btn" onclick="deleteProduct('${id}')">X</button>
+                    <img id="mainImg-${id}" src="${p.images[0]}">
                     <div class="card-info">
                         <h3>${p.title}</h3>
-                        <p class="price">${p.price} ج.م</p>
+                        <div class="price">${p.price} EGP</div>
                         
-                        <select id="size-${id}" class="size-selector">
-                            <option value="S">Small (S)</option>
-                            <option value="M">Medium (M)</option>
-                            <option value="L">Large (L)</option>
-                            <option value="XL">X-Large (XL)</option>
-                            <option value="XXL">XX-Large (XXL)</option>
-                        </select>
+                        <div class="color-container">${colorDots}</div>
 
-                        <button class="btn-buy" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة +</button>
+                        <div class="size-container" id="size-container-${id}">
+                            <div class="size-box size-group-${id}" onclick="selectSize('${id}', 'S', this)">S</div>
+                            <div class="size-box size-group-${id}" onclick="selectSize('${id}', 'M', this)">M</div>
+                            <div class="size-box size-group-${id}" onclick="selectSize('${id}', 'L', this)">L</div>
+                            <div class="size-box size-group-${id}" onclick="selectSize('${id}', 'XL', this)">XL</div>
+                        </div>
+
+                        <button class="btn-buy" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة</button>
                     </div>
                 </div>`;
         }
     }
 
     function addToCart(t, p, id) {
-        // سحب المقاس المختار
-        const selectedSize = document.getElementById(`size-${id}`).value;
+        let sizeActive = document.querySelector(`.size-group-${id}.active`);
+        if(!sizeActive) return alert("اختار المقاس الأول يا بطل!");
         
-        cart.push({t, p, s: selectedSize});
-        document.getElementById('cartCount').innerText = cart.length;
+        let size = sizeActive.innerText;
+        cart.push({t, p, s: size});
+        
         document.getElementById('whatsappBtn').style.display = "block";
-        
-        let total = cart.reduce((total, item) => total + item.p, 0);
-        let msg = encodeURIComponent("طلب جديد من MOHANAD STORE:\n\n" + 
-                  cart.map(i => `- ${i.t} (مقاس: ${i.s}) [${i.p} ج.م]`).join("\n") + 
-                  "\n\nالمجموع الكلي: " + total + " ج.م");
-                  
+        let total = cart.reduce((s, i) => s + i.p, 0);
+        let msg = encodeURIComponent("طلب جديد من MOHANAD STORE:\n\n" + cart.map(i => `- ${i.t} (مقاس: ${i.s})`).join("\n") + "\n\nالإجمالي: " + total + " ج.م");
         document.getElementById('whatsappBtn').href = `https://wa.me/${myPhone}?text=${msg}`;
     }
 
