@@ -6,84 +6,141 @@
     <title>MOHANAD STORE</title>
     <style>
         :root { --main: #000; --bg: #ffffff; }
-        body { font-family: 'Arial Black', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: var(--main); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: var(--main); overflow-x: hidden; }
+        header { background: #fff; padding: 15px 20px; display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; }
         
-        header { background: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; font-size: 1.4rem; font-weight: 900; }
+        /* شبكة المنتجات */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        .card { background: #fff; cursor: pointer; border-radius: 8px; overflow: hidden; border: 1px solid #eee; position: relative; }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-info { padding: 8px; text-align: right; }
+        .price { font-weight: 900; color: #d00; }
 
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .card { background: #fff; position: relative; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
+        /* صفحة المنتج والسلايدر */
+        .product-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 50px; }
+        .close-modal { font-size: 2rem; cursor: pointer; position: absolute; left: 20px; top: 10px; z-index: 2100; background: #eee; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         
-        .card-info { padding: 10px; text-align: right; }
-        .card-info h3 { font-size: 0.85rem; margin: 5px 0; font-weight: bold; }
-        .price { font-size: 1rem; font-weight: 900; margin-bottom: 8px; }
+        .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #f9f9f9; scrollbar-width: none; }
+        .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 450px; }
 
-        /* دوائر الألوان الملونة */
-        .color-selector { display: flex; gap: 8px; margin: 10px 0; }
-        .color-dot { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
-        .color-dot.active { border-color: #000; transform: scale(1.2); }
+        .details-content { padding: 20px; text-align: right; }
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 10px; cursor: pointer; }
+        .color-dot.active { border-color: #000; transform: scale(1.1); }
         
-        /* المقاسات مترتبة: L - XL - XXL */
-        .size-grid { display: flex; gap: 5px; margin-bottom: 12px; }
-        .s-btn { border: 1px solid #ddd; padding: 6px; font-size: 0.75rem; cursor: pointer; flex: 1; text-align: center; font-weight: bold; border-radius: 4px; }
-        .s-btn.active { background: #000; color: #fff; border-color: #000; }
+        .size-grid { display: flex; gap: 8px; }
+        .s-btn { border: 1px solid #ddd; padding: 12px; cursor: pointer; border-radius: 8px; flex: 1; text-align: center; font-weight: bold; }
+        .s-btn.active { background: #000; color: #fff; }
 
-        .buy-btn { width: 100%; background: #000; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; }
-        
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 4px solid #000; z-index: 2000; width: 85%; max-width: 350px; border-radius: 15px; }
-        #adminPanel input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #000; box-sizing: border-box; border-radius: 5px; }
-        .del-btn { display: none; position: absolute; top: 5px; left: 5px; background: red; color: white; border: none; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 50%; z-index: 10; }
+        /* نموذج الشحن */
+        .shipping-form { margin-top: 25px; background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
+        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
 
-        .checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 15px 40px; text-decoration: none; font-weight: bold; border-radius: 50px; display: none; z-index: 1000; }
+        .order-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 18px; font-weight: bold; font-size: 1.1rem; border-radius: 12px; cursor: pointer; }
+
+        /* لوحة التحكم (مخفية للكونسول) */
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; }
+        #adminPanel input { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
+        .del-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; position: absolute; top: 5px; left: 5px; z-index: 10; display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>MOHANAD STORE</h1>
-    <div class="cart-icon">🛒 <span id="cartCount">0</span></div>
+    <h1 style="margin:0; font-size: 1.3rem;">MOHANAD STORE</h1>
 </header>
 
 <div class="container" id="productsGrid"></div>
 
-<div id="adminPanel">
-    <h3>إضافة منتج 🛠️</h3>
-    <input type="text" id="pTitle" placeholder="اسم المنتج">
-    <input type="number" id="pPrice" placeholder="السعر">
-    <input type="text" id="pImg" placeholder="رابط الصورة (مباشر)">
-    <input type="text" id="pColors" placeholder="الألوان (black, white, red)">
-    <button onclick="uploadItem()" style="width:100%; background:black; color:white; padding:12px; border:none; cursor:pointer; font-weight:bold;">نشر المنتج</button>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إلغاء</button>
+<div id="productModal" class="product-modal">
+    <span class="close-modal" onclick="closeModal()">×</span>
+    <div id="imageSlider" class="slider-container"></div>
+    <div class="details-content">
+        <h2 id="modalTitle"></h2>
+        <p id="modalPrice" style="font-size:1.3rem; font-weight:bold; color:#d00"></p>
+        <div id="modalColors"></div>
+        <div class="size-grid" style="margin-top:15px">
+            <div class="s-btn" onclick="selectSize('L', this)">L</div>
+            <div class="s-btn" onclick="selectSize('XL', this)">XL</div>
+            <div class="s-btn" onclick="selectSize('XXL', this)">XXL</div>
+        </div>
+        <div class="shipping-form">
+            <input type="text" id="custName" placeholder="الاسم بالكامل">
+            <input type="tel" id="custPhone" placeholder="رقم الموبايل">
+            <select id="custCity">
+                <option value="">اختر المحافظة</option>
+                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option>
+                <option>الدقهلية</option><option>الغربية</option><option>الشرقية</option>
+                </select>
+            <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
+            <button class="order-btn" onclick="sendOrder()">تأكيد الطلب (واتساب)</button>
+        </div>
+    </div>
 </div>
 
-<a href="#" id="waLink" class="checkout-bar" target="_blank">إتمام الطلب (واتساب)</a>
+<div id="adminPanel">
+    <h3>إضافة منتج جديد 🛠️</h3>
+    <input type="text" id="pTitle" placeholder="اسم المنتج">
+    <input type="number" id="pPrice" placeholder="السعر">
+    <input type="file" id="pImgFile" accept="image/*" multiple>
+    <input type="text" id="pColors" placeholder="الألوان (black, red, white)">
+    <button onclick="uploadProduct()" id="saveBtn" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; cursor:pointer;">نشر المنتج</button>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إغلاق</button>
+</div>
 
 <script>
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
-    const myPhone = "201044667187"; 
-    let cart = [];
+    const imgBB_Key = "705f13476d05f27c81d3e8e2095f9c96"; 
+    const myPhone = "201044667187";
+    let selectedProduct = null, selectedColor = "", selectedSize = "";
 
-    // لفتح لوحة التحكم اكتب show() في الـ Console
-    window.show = () => {
-        document.getElementById('adminPanel').style.display = 'block';
-        document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'block');
-        return "Admin Panel Active";
+    // رجعنا نظام الكونسول هنا يا مهند
+    window.show = function() {
+        let p = prompt("كلمة السر:");
+        if(p === "123") {
+            document.getElementById('adminPanel').style.display = 'block';
+            document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'block');
+            return "مرحباً يا مهند.. لوحة التحكم مفتوحة الآن.";
+        } else {
+            return "كلمة سر خاطئة!";
+        }
     };
 
-    async function uploadItem() {
+    async function uploadProduct() {
         const title = document.getElementById('pTitle').value;
         const price = document.getElementById('pPrice').value;
-        const img = document.getElementById('pImg').value;
         const colors = document.getElementById('pColors').value;
-        
-        if(!title || !price || !img) return alert("املا البيانات!");
-
-        await fetch(`${dbURL}.json`, {
-            method: 'POST',
-            body: JSON.stringify({ title, price: parseInt(price), img, colors })
-        });
+        const files = document.getElementById('pImgFile').files;
+        if(!title || !price || files.length === 0) return alert("كمل البيانات!");
+        document.getElementById('saveBtn').innerText = "جاري الرفع... ⏳";
+        let urls = [];
+        for (let f of files) {
+            let fd = new FormData(); fd.append("image", f);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgBB_Key}`, { method: "POST", body: fd });
+            const j = await res.json(); urls.push(j.data.url);
+        }
+        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price, imgs: urls, colors }) });
         location.reload();
+    }
+
+    async function loadStore() {
+        const res = await fetch(`${dbURL}.json`);
+        const data = await res.json();
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = "";
+        if(!data) return;
+        for (let id in data) {
+            const p = data[id];
+            const img = p.imgs ? p.imgs[0] : (p.img || '');
+            grid.innerHTML += `
+                <div class="card" onclick='openProduct(${JSON.stringify(p)})'>
+                    <button class="del-btn" onclick="event.stopPropagation(); deleteItem('${id}')">مسح</button>
+                    <img src="${img}">
+                    <div class="card-info">
+                        <h3>${p.title}</h3>
+                        <div class="price">${p.price} EGP</div>
+                    </div>
+                </div>`;
+        }
     }
 
     async function deleteItem(id) {
@@ -93,62 +150,40 @@
         }
     }
 
-    async function loadStore() {
-        const res = await fetch(`${dbURL}.json`);
-        const data = await res.json();
-        const grid = document.getElementById('productsGrid');
-        grid.innerHTML = "";
-
-        if(!data) return;
-
-        for (let id in data) {
-            const p = data[id];
-            const colorArray = p.colors ? p.colors.split(',') : [];
-            let colorDots = colorArray.map(c => `<div class="color-dot c-${id}" style="background:${c.trim()}" onclick="setColor('${id}','${c.trim()}',this)"></div>`).join('');
-
-            grid.innerHTML += `
-                <div class="card">
-                    <button class="del-btn" onclick="deleteItem('${id}')">✕</button>
-                    <img src="${p.img}">
-                    <div class="card-info">
-                        <h3>${p.title}</h3>
-                        <div class="price">${p.price} EGP</div>
-                        <div class="color-selector">${colorDots}</div>
-                        <div class="size-grid">
-                            <div class="s-btn sz-${id}" onclick="setSize('${id}','L',this)">L</div>
-                            <div class="s-btn sz-${id}" onclick="setSize('${id}','XL',this)">XL</div>
-                            <div class="s-btn sz-${id}" onclick="setSize('${id}','XXL',this)">XXL</div>
-                        </div>
-                        <button class="buy-btn" onclick="addToCart('${p.title}', ${p.price}, '${id}')">إضافة للسلة</button>
-                    </div>
-                </div>`;
+    function openProduct(p) {
+        selectedProduct = p;
+        const slider = document.getElementById('imageSlider');
+        slider.innerHTML = "";
+        const list = p.imgs || [p.img];
+        list.forEach(u => { slider.innerHTML += `<img src="${u}">`; });
+        document.getElementById('modalTitle').innerText = p.title;
+        document.getElementById('modalPrice').innerText = p.price + " EGP";
+        const cDiv = document.getElementById('modalColors');
+        cDiv.innerHTML = "";
+        if(p.colors) {
+            p.colors.split(',').forEach(c => {
+                cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`;
+            });
         }
+        document.getElementById('productModal').style.display = 'block';
     }
 
-    function setColor(id, color, el) {
-        document.querySelectorAll(`.c-${id}`).forEach(d => d.classList.remove('active'));
-        el.classList.add('active');
-        el.dataset.chosenColor = color;
+    function selectColor(c, el) {
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        el.classList.add('active'); selectedColor = c;
     }
-
-    function setSize(id, size, el) {
-        document.querySelectorAll(`.sz-${id}`).forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
+    function selectSize(s, el) {
+        document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active'); selectedSize = s;
     }
+    function closeModal() { document.getElementById('productModal').style.display = 'none'; }
 
-    function addToCart(name, price, id) {
-        const sizeBtn = document.querySelector(`.sz-${id}.active`);
-        const colorDot = document.querySelector(`.c-${id}.active`);
-        if(!sizeBtn) return alert("اختار المقاس!");
-        
-        const color = colorDot ? colorDot.dataset.chosenColor : "لم يتم تحديد لون";
-        cart.push({name, price, size: sizeBtn.innerText, color});
-        
-        document.getElementById('cartCount').innerText = cart.length;
-        document.getElementById('waLink').style.display = "block";
-        
-        let msg = encodeURIComponent(`طلب جديد من المتجر:\n${cart.map(i=>`- ${i.name} (مقاس: ${i.size}) (لون: ${i.color})`).join('\n')}\nالإجمالي: ${cart.reduce((a,b)=>a+b.price,0)} EGP`);
-        document.getElementById('waLink').href = `https://wa.me/${myPhone}?text=${msg}`;
+    function sendOrder() {
+        const n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value;
+        const ct = document.getElementById('custCity').value, ad = document.getElementById('custAddress').value;
+        if(!selectedColor || !selectedSize || !n || !ph || !ct || !ad) return alert("كمل البيانات!");
+        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nاللون: ${selectedColor}\nالمقاس: ${selectedSize}\nالاسم: ${n}\nموبايل: ${ph}\nالعنوان: ${ct} - ${ad}`;
+        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
     }
 
     loadStore();
