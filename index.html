@@ -7,49 +7,50 @@
     <style>
         :root { --main: #000; --bg: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: var(--main); overflow-x: hidden; }
-        header { background: #fff; padding: 15px 20px; display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; }
+        header { background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; }
         
-        /* شبكة المنتجات */
         .container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
         .card { background: #fff; cursor: pointer; border-radius: 8px; overflow: hidden; border: 1px solid #eee; position: relative; }
         .card img { width: 100%; height: 200px; object-fit: cover; }
         .card-info { padding: 8px; text-align: right; }
         .price { font-weight: 900; color: #d00; }
 
-        /* صفحة المنتج والسلايدر */
+        /* ستايل صفحة المنتج */
         .product-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; padding-bottom: 50px; }
         .close-modal { font-size: 2rem; cursor: pointer; position: absolute; left: 20px; top: 10px; z-index: 2100; background: #eee; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-        
         .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #f9f9f9; scrollbar-width: none; }
         .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 450px; }
-
         .details-content { padding: 20px; text-align: right; }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 10px; cursor: pointer; }
-        .color-dot.active { border-color: #000; transform: scale(1.1); }
         
-        .size-grid { display: flex; gap: 8px; }
-        .s-btn { border: 1px solid #ddd; padding: 12px; cursor: pointer; border-radius: 8px; flex: 1; text-align: center; font-weight: bold; }
-        .s-btn.active { background: #000; color: #fff; }
-
-        /* نموذج الشحن */
-        .shipping-form { margin-top: 25px; background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
-        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-
-        .order-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 18px; font-weight: bold; font-size: 1.1rem; border-radius: 12px; cursor: pointer; }
-
-        /* لوحة التحكم (مخفية للكونسول) */
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; }
-        #adminPanel input { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
-        .del-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; position: absolute; top: 5px; left: 5px; z-index: 10; display: none; }
+        /* لوحة التحكم والمسح المتعدد */
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
+        
+        .multi-delete-btn { display: none; background: red; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-right: 10px; }
+        .select-box { display: none; position: absolute; top: 10px; right: 10px; width: 25px; height: 25px; z-index: 10; cursor: pointer; }
+        
+        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .order-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="margin:0; font-size: 1.3rem;">MOHANAD STORE</h1>
+    <button id="multiDeleteBtn" class="multi-delete-btn" onclick="deleteSelected()">مسح المحدد 🗑️</button>
+    <h1 style="margin:0; font-size: 1.2rem;">MOHANAD STORE</h1>
 </header>
 
 <div class="container" id="productsGrid"></div>
+
+<div id="adminPanel">
+    <h3>إضافة منتج جديد 🛠️</h3>
+    <input type="text" id="pTitle" placeholder="اسم المنتج">
+    <input type="number" id="pPrice" placeholder="السعر">
+    <textarea id="pImgs" rows="3" placeholder="روابط الصور (كل رابط في سطر)"></textarea>
+    <input type="text" id="pColors" placeholder="الألوان (مثال: black, white)">
+    <button onclick="saveProduct()" id="saveBtn" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">حفظ المنتج</button>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إلغاء</button>
+</div>
 
 <div id="productModal" class="product-modal">
     <span class="close-modal" onclick="closeModal()">×</span>
@@ -58,67 +59,41 @@
         <h2 id="modalTitle"></h2>
         <p id="modalPrice" style="font-size:1.3rem; font-weight:bold; color:#d00"></p>
         <div id="modalColors"></div>
-        <div class="size-grid" style="margin-top:15px">
-            <div class="s-btn" onclick="selectSize('L', this)">L</div>
-            <div class="s-btn" onclick="selectSize('XL', this)">XL</div>
-            <div class="s-btn" onclick="selectSize('XXL', this)">XXL</div>
-        </div>
         <div class="shipping-form">
             <input type="text" id="custName" placeholder="الاسم بالكامل">
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
-            <select id="custCity">
-                <option value="">اختر المحافظة</option>
-                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option>
-                <option>الدقهلية</option><option>الغربية</option><option>الشرقية</option>
-                </select>
+            <select id="custCity"><option value="">اختر المحافظة</option><option>القاهرة</option><option>الجيزة</option></select>
             <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
-            <button class="order-btn" onclick="sendOrder()">تأكيد الطلب (واتساب)</button>
+            <button class="order-btn" onclick="sendOrder()">تأكيد الطلب</button>
         </div>
     </div>
 </div>
 
-<div id="adminPanel">
-    <h3>إضافة منتج جديد 🛠️</h3>
-    <input type="text" id="pTitle" placeholder="اسم المنتج">
-    <input type="number" id="pPrice" placeholder="السعر">
-    <input type="file" id="pImgFile" accept="image/*" multiple>
-    <input type="text" id="pColors" placeholder="الألوان (black, red, white)">
-    <button onclick="uploadProduct()" id="saveBtn" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; cursor:pointer;">نشر المنتج</button>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إغلاق</button>
-</div>
-
 <script>
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
-    const imgBB_Key = "705f13476d05f27c81d3e8e2095f9c96"; 
     const myPhone = "201044667187";
-    let selectedProduct = null, selectedColor = "", selectedSize = "";
+    let selectedProduct = null;
 
-    // رجعنا نظام الكونسول هنا يا مهند
+    // نظام الكونسول المطور
     window.show = function() {
         let p = prompt("كلمة السر:");
         if(p === "123") {
             document.getElementById('adminPanel').style.display = 'block';
-            document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'block');
-            return "مرحباً يا مهند.. لوحة التحكم مفتوحة الآن.";
-        } else {
-            return "كلمة سر خاطئة!";
+            document.getElementById('multiDeleteBtn').style.display = 'block';
+            document.querySelectorAll('.select-box').forEach(el => el.style.display = 'block');
+            return "مرحباً مهند.. تم تفعيل وضع التعديل.";
         }
+        return "كلمة سر خاطئة!";
     };
 
-    async function uploadProduct() {
+    async function saveProduct() {
         const title = document.getElementById('pTitle').value;
         const price = document.getElementById('pPrice').value;
-        const colors = document.getElementById('pColors').value;
-        const files = document.getElementById('pImgFile').files;
-        if(!title || !price || files.length === 0) return alert("كمل البيانات!");
-        document.getElementById('saveBtn').innerText = "جاري الرفع... ⏳";
-        let urls = [];
-        for (let f of files) {
-            let fd = new FormData(); fd.append("image", f);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgBB_Key}`, { method: "POST", body: fd });
-            const j = await res.json(); urls.push(j.data.url);
-        }
-        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price, imgs: urls, colors }) });
+        const imgsRaw = document.getElementById('pImgs').value;
+        if(!title || !price || !imgsRaw) return alert("كمل البيانات!");
+        
+        const imgsList = imgsRaw.split('\n').filter(l => l.trim() !== "");
+        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price, imgs: imgsList, colors: document.getElementById('pColors').value }) });
         location.reload();
     }
 
@@ -130,10 +105,10 @@
         if(!data) return;
         for (let id in data) {
             const p = data[id];
-            const img = p.imgs ? p.imgs[0] : (p.img || '');
+            const img = p.imgs ? p.imgs[0] : '';
             grid.innerHTML += `
-                <div class="card" onclick='openProduct(${JSON.stringify(p)})'>
-                    <button class="del-btn" onclick="event.stopPropagation(); deleteItem('${id}')">مسح</button>
+                <div class="card" onclick="openProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                    <input type="checkbox" class="select-box" value="${id}" onclick="event.stopPropagation()">
                     <img src="${img}">
                     <div class="card-info">
                         <h3>${p.title}</h3>
@@ -143,9 +118,16 @@
         }
     }
 
-    async function deleteItem(id) {
-        if(confirm("مسح؟")) {
-            await fetch(`${dbURL}/${id}.json`, { method: 'DELETE' });
+    // وظيفة مسح كذا منتج مع بعض
+    async function deleteSelected() {
+        const selected = document.querySelectorAll('.select-box:checked');
+        if(selected.length === 0) return alert("اختار المنتجات اللي عايز تمسحها الأول!");
+        
+        if(confirm(`هل أنت متأكد من مسح ${selected.length} منتجات؟`)) {
+            document.getElementById('multiDeleteBtn').innerText = "جاري المسح...⏳";
+            for (let box of selected) {
+                await fetch(`${dbURL}/${box.value}.json`, { method: 'DELETE' });
+            }
             location.reload();
         }
     }
@@ -154,38 +136,14 @@
         selectedProduct = p;
         const slider = document.getElementById('imageSlider');
         slider.innerHTML = "";
-        const list = p.imgs || [p.img];
-        list.forEach(u => { slider.innerHTML += `<img src="${u}">`; });
+        (p.imgs || []).forEach(u => { slider.innerHTML += `<img src="${u}">`; });
         document.getElementById('modalTitle').innerText = p.title;
         document.getElementById('modalPrice').innerText = p.price + " EGP";
-        const cDiv = document.getElementById('modalColors');
-        cDiv.innerHTML = "";
-        if(p.colors) {
-            p.colors.split(',').forEach(c => {
-                cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`;
-            });
-        }
         document.getElementById('productModal').style.display = 'block';
     }
 
-    function selectColor(c, el) {
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-        el.classList.add('active'); selectedColor = c;
-    }
-    function selectSize(s, el) {
-        document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active'); selectedSize = s;
-    }
     function closeModal() { document.getElementById('productModal').style.display = 'none'; }
-
-    function sendOrder() {
-        const n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value;
-        const ct = document.getElementById('custCity').value, ad = document.getElementById('custAddress').value;
-        if(!selectedColor || !selectedSize || !n || !ph || !ct || !ad) return alert("كمل البيانات!");
-        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nاللون: ${selectedColor}\nالمقاس: ${selectedSize}\nالاسم: ${n}\nموبايل: ${ph}\nالعنوان: ${ct} - ${ad}`;
-        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
-    }
-
+    
     loadStore();
 </script>
 </body>
