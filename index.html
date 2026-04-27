@@ -19,24 +19,27 @@
         .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 450px; }
         .details-content { padding: 20px; text-align: right; }
         
-        /* ستايل الألوان والمقاسات */
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 8px; cursor: pointer; }
-        .color-dot.active { border-color: #000; transform: scale(1.2); }
-        .size-btn { border: 1px solid #ddd; padding: 8px 15px; cursor: pointer; border-radius: 5px; display: inline-block; margin-left: 5px; margin-top: 5px; font-weight: bold; }
+        /* شكل المقاسات المودرن الجديد */
+        .size-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+        .size-btn { border: 1.5px solid #ddd; padding: 12px 18px; cursor: pointer; border-radius: 8px; min-width: 50px; text-align: center; font-weight: bold; transition: 0.3s; background: #fcfcfc; }
         .size-btn.active { background: #000; color: #fff; border-color: #000; }
 
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; }
-        #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
+        /* ستايل الألوان */
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 10px; cursor: pointer; }
+        .color-dot.active { border-color: #000; transform: scale(1.15); }
+
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 3px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; font-family: inherit; }
         .multi-delete-btn { display: none; background: red; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .select-box { display: none; position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; z-index: 10; }
-        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .order-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
+        .select-box { display: none; position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; z-index: 10; cursor: pointer; }
+        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-family: inherit; background: #fafafa; }
+        .order-btn { width: 100%; background: #25D366; color: #fff; border: none; padding: 18px; font-weight: bold; font-size: 1.1rem; border-radius: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <button id="multiDeleteBtn" class="multi-delete-btn" onclick="deleteSelected()">حذف المحدد 🗑️</button>
+    <button id="multiDeleteBtn" class="multi-delete-btn" onclick="deleteSelected()">مسح المحدد 🗑️</button>
     <h1 style="margin:0; font-size: 1.1rem;">MOHANAD STORE</h1>
 </header>
 
@@ -47,9 +50,9 @@
     <input type="text" id="pTitle" placeholder="اسم المنتج">
     <input type="number" id="pPrice" placeholder="السعر">
     <textarea id="pImgs" rows="3" placeholder="روابط الصور (رابط في كل سطر)"></textarea>
-    <input type="text" id="pColors" placeholder="الألوان (مثال: black, white, red)">
-    <input type="text" id="pSizes" placeholder="المقاسات (مثال: L, XL, XXL)">
-    <button onclick="saveProduct()" id="saveBtn" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; cursor:pointer;">حفظ</button>
+    <input type="text" id="pColors" placeholder="الألوان (مثل: black, white, red)">
+    <input type="text" id="pSizes" placeholder="المقاسات (مثل: L, XL, XXL)">
+    <button onclick="saveProduct()" id="saveBtn" style="width:100%; background:black; color:white; padding:15px; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">حفظ</button>
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px; cursor:pointer;">إلغاء</button>
 </div>
 
@@ -58,17 +61,20 @@
     <div id="imageSlider" class="slider-container"></div>
     <div class="details-content">
         <h2 id="modalTitle"></h2>
-        <p id="modalPrice" style="font-size:1.3rem; font-weight:bold; color:#d00"></p>
+        <p id="modalPrice" style="font-size:1.4rem; font-weight:bold; color:#d00"></p>
         
-        <p>اللون:</p><div id="modalColors"></div>
-        <p style="margin-top:10px">المقاس:</p><div id="modalSizes"></div>
+        <p style="font-weight:bold">اللون:</p>
+        <div id="modalColors"></div>
+        
+        <p style="font-weight:bold; margin-top:15px">المقاس:</p>
+        <div id="modalSizes" class="size-grid"></div>
 
-        <div class="shipping-form" style="margin-top:20px">
+        <div class="shipping-form" style="margin-top:25px">
             <input type="text" id="custName" placeholder="الاسم بالكامل">
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
-            <select id="custCity"><option value="">اختر المحافظة</option><option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option></select>
+            <select id="custCity"><option value="">اختر المحافظة</option><option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>القليوبية</option></select>
             <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
-            <button class="order-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
+            <button class="order-btn" onclick="sendOrder()">إرسال الطلب (واتساب)</button>
         </div>
     </div>
 </div>
@@ -84,17 +90,14 @@
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('multiDeleteBtn').style.display = 'block';
             document.querySelectorAll('.select-box').forEach(el => el.style.display = 'block');
-            return "مرحباً يا مهند.. لوحة التحكم جاهزة.";
+            return "مرحباً يا مهند.. اللوحة مفتوحة.";
         }
         return "خطأ!";
     };
 
     async function saveProduct() {
-        const title = document.getElementById('pTitle').value;
-        const price = document.getElementById('pPrice').value;
-        const imgsRaw = document.getElementById('pImgs').value;
-        const colors = document.getElementById('pColors').value;
-        const sizes = document.getElementById('pSizes').value;
+        const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value;
+        const imgsRaw = document.getElementById('pImgs').value, colors = document.getElementById('pColors').value, sizes = document.getElementById('pSizes').value;
         if(!title || !price || !imgsRaw) return alert("كمل البيانات!");
         
         const imgsList = imgsRaw.split('\n').filter(l => l.trim() !== "");
@@ -137,13 +140,13 @@
         document.getElementById('modalTitle').innerText = p.title;
         document.getElementById('modalPrice').innerText = p.price + " EGP";
         
-        // عرض الألوان
+        // الألوان
         const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
         if(p.colors) p.colors.split(',').forEach(c => {
             cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selColor('${c.trim()}', this)"></div>`;
         });
 
-        // عرض المقاسات
+        // المقاسات (المربعات المودرن)
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
         if(p.sizes) p.sizes.split(',').forEach(s => {
             sDiv.innerHTML += `<div class="size-btn" onclick="selSize('${s.trim()}', this)">${s.trim()}</div>`;
@@ -164,8 +167,8 @@
 
     function sendOrder() {
         const n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value, ct = document.getElementById('custCity').value, ad = document.getElementById('custAddress').value;
-        if(!selCol || !selSiz || !n || !ph || !ct || !ad) return alert("من فضلك اختار اللون والمقاس وكمل بياناتك!");
-        const msg = `طلب جديد من MOHANAD STORE:\nالمنتج: ${selectedProduct.title}\nاللون: ${selCol}\nالمقاس: ${selSiz}\nالاسم: ${n}\nموبايل: ${ph}\nالعنوان: ${ct} - ${ad}`;
+        if(!selCol || !selSiz || !n || !ph || !ct || !ad) return alert("اختار اللون والمقاس وكمل بيانات الشحن!");
+        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nاللون: ${selCol}\nالمقاس: ${selSiz}\nالاسم: ${n}\nموبايل: ${ph}\nالعنوان: ${ct} - ${ad}`;
         window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
     }
     loadStore();
