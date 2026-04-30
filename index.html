@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mohanad Store</title>
+    <title>MOHANAD STORE</title>
     <style>
         :root { --main: #000; --bg: #ffffff; --accent: #25D366; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: var(--main); overflow-x: hidden; }
@@ -16,7 +16,6 @@
         .card-info { padding: 8px; text-align: right; }
         .price { font-weight: 900; color: #d00; }
 
-        /* مودال مودرن بأنيميشن */
         .product-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #fff; z-index: 2000; overflow-y: auto; 
@@ -29,19 +28,17 @@
 
         .close-modal { font-size: 2rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #eee; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
         
-        /* سلايدر الصور والنقط */
         .slider-wrapper { position: relative; width: 100%; background: #f9f9f9; }
         .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slider-container::-webkit-scrollbar { display: none; }
         .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 450px; }
         
-        .dots-container { display: flex; justify-content: center; gap: 6px; padding: 15px 0; }
+        .dots-container { display: flex; justify(content: center; gap: 6px; padding: 15px 0; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: 0.3s; }
         .dot.active { background: #000; width: 20px; border-radius: 10px; }
 
         .details-content { padding: 0 20px 50px 20px; text-align: right; }
         .size-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .size-btn { border: 1.5px solid #ddd; padding: 10px 18px; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.2s; }
+        .size-btn { border: 1.5px solid #ddd; padding: 10px 18px; cursor: pointer; border-radius: 10px; font-weight: bold; }
         .size-btn.active { background: #000; color: #fff; border-color: #000; }
         .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 10px; cursor: pointer; }
         .color-dot.active { border-color: #000; transform: scale(1.1); }
@@ -49,64 +46,56 @@
         .desc-box { background: #f8f8f8; padding: 15px; border-radius: 12px; margin: 15px 0; border-right: 4px solid #000; }
         .qty-input { width: 80px; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1.1rem; text-align: center; font-weight: bold; }
 
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 2px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 25px; border: 2px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 24px; }
         #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; }
         
         .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; background: #fafafa; font-family: inherit; }
-        .order-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; font-weight: bold; border-radius: 18px; cursor: pointer; font-size: 1.1rem; }
+        .order-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; font-weight: bold; border-radius: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <button id="multiDeleteBtn" style="display:none; background:red; color:#fff; border:none; padding:8px 12px; border-radius:8px;" onclick="deleteSelected()">مسح 🗑️</button>
+    <button id="multiDeleteBtn" style="display:none; background:red; color:#fff; border:none; padding:8px 12px; border-radius:8px;" onclick="window.deleteSelected()">مسح 🗑️</button>
     <h1 style="margin:0; font-size: 1.2rem;">MOHANAD STORE</h1>
 </header>
 
 <div class="container" id="productsGrid"></div>
 
-<!-- لوحة التحكم -->
 <div id="adminPanel">
     <h3>إضافة منتج جديد 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
     <input type="number" id="pPrice" placeholder="السعر">
-    <textarea id="pImgs" rows="2" placeholder="روابط الصور (كل رابط في سطر)"></textarea>
+    <textarea id="pImgs" rows="2" placeholder="روابط الصور"></textarea>
     <textarea id="pDesc" rows="2" placeholder="وصف المنتج"></textarea>
-    <input type="text" id="pColors" placeholder="الألوان (مثل: black, red)">
-    <input type="text" id="pSizes" placeholder="المقاسات (مثل: M, L, XL)">
-    <button onclick="saveProduct()" style="width:100%; background:#000; color:#fff; padding:15px; border:none; border-radius:12px; cursor:pointer; font-weight:bold;">حفظ المنتج</button>
+    <input type="text" id="pColors" placeholder="الألوان">
+    <input type="text" id="pSizes" placeholder="المقاسات">
+    <button onclick="window.saveProduct()" style="width:100%; background:#000; color:#fff; padding:15px; border:none; border-radius:12px; cursor:pointer; font-weight:bold;">حفظ</button>
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إلغاء</button>
 </div>
 
-<!-- مودال المنتج -->
 <div id="productModal" class="product-modal">
-    <span class="close-modal" onclick="closeModal()">×</span>
+    <span class="close-modal" onclick="window.closeModal()">×</span>
     <div class="slider-wrapper">
-        <div id="imageSlider" class="slider-container" onscroll="updateDots()"></div>
+        <div id="imageSlider" class="slider-container" onscroll="window.updateDots()"></div>
         <div id="dotsContainer" class="dots-container"></div>
     </div>
     <div class="details-content">
-        <h2 id="modalTitle" style="margin-top:0"></h2>
-        <p id="modalPrice" style="font-size:1.6rem; font-weight:900; color:#d00; margin:0"></p>
+        <h2 id="modalTitle"></h2>
+        <p id="modalPrice" style="font-size:1.6rem; font-weight:900; color:#d00;"></p>
         <div id="modalDesc" class="desc-box"></div>
-        
         <div style="display: flex; align-items: center; gap: 15px; margin: 20px 0;">
-            <label style="font-weight: bold;">الكمية المطلوب شرائها:</label>
+            <label style="font-weight: bold;">الكمية:</label>
             <input type="number" id="orderQty" class="qty-input" value="1" min="1">
         </div>
-
-        <p style="font-weight:bold; margin-bottom:10px;">اللون:</p>
-        <div id="modalColors"></div>
-        
-        <p style="font-weight:bold; margin-top:20px; margin-bottom:10px;">المقاس:</p>
-        <div id="modalSizes" class="size-grid"></div>
-
-        <div class="shipping-form" style="margin-top:30px; border-top: 1px solid #eee; padding-top:20px;">
+        <p style="font-weight:bold">اللون:</p><div id="modalColors"></div>
+        <p style="font-weight:bold; margin-top:20px">المقاس:</p><div id="modalSizes" class="size-grid"></div>
+        <div class="shipping-form" style="margin-top:30px;">
             <input type="text" id="custName" placeholder="الاسم بالكامل">
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
             <select id="custCity"><option value="">اختر المحافظة</option><option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option></select>
-            <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
-            <button class="order-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
+            <textarea id="custAddress" rows="3" placeholder="العنوان"></textarea>
+            <button class="order-btn" onclick="window.sendOrder()">تأكيد الطلب</button>
         </div>
     </div>
 </div>
@@ -122,57 +111,70 @@
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('multiDeleteBtn').style.display = 'block';
             document.querySelectorAll('.select-box').forEach(el => el.style.display = 'block');
-            return "مرحباً مهند.";
+            return "أهلاً يا مهند.";
         }
         return "خطأ!";
     };
 
-    window.addEventListener('popstate', () => closeModal(false));
+    window.saveProduct = async function() {
+        const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value, desc = document.getElementById('pDesc').value, colors = document.getElementById('pColors').value, sizes = document.getElementById('pSizes').value;
+        if(!title || !price || !imgs) return alert("كمل البيانات!");
+        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price, imgs: imgs.split('\n'), desc, colors, sizes }) });
+        location.reload();
+    };
 
-    function openProduct(p) {
+    window.deleteSelected = async function() {
+        const selected = document.querySelectorAll('.select-box:checked');
+        if(selected.length === 0) return alert("حدد منتج الأول!");
+        if(confirm(`حذف ${selected.length} منتجات؟`)) {
+            for (let box of selected) await fetch(`${dbURL}/${box.value}.json`, { method: 'DELETE' });
+            location.reload();
+        }
+    };
+
+    window.openProduct = function(p) {
         selectedProduct = p; selCol = ""; selSiz = "";
         document.getElementById('orderQty').value = 1;
-        
         const slider = document.getElementById('imageSlider'); slider.innerHTML = "";
         const dots = document.getElementById('dotsContainer'); dots.innerHTML = "";
-        
         (p.imgs || []).forEach((u, i) => { 
             slider.innerHTML += `<img src="${u}">`; 
             dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
         });
-
         document.getElementById('modalTitle').innerText = p.title;
         document.getElementById('modalPrice').innerText = p.price + " EGP";
-        document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف متوفر.";
-        
+        document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف.";
         const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
-        if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selColor('${c.trim()}', this)"></div>`; });
-
+        if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="window.selColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
-        if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selSize('${s.trim()}', this)">${s.trim()}</div>`; });
-
+        if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="window.selSize('${s.trim()}', this)">${s.trim()}</div>`; });
         document.getElementById('productModal').classList.add('active');
         history.pushState({modal: true}, "");
-    }
+    };
 
-    function updateDots() {
+    window.updateDots = function() {
         const slider = document.getElementById('imageSlider');
         const dots = document.querySelectorAll('.dot');
         const index = Math.round(slider.scrollLeft / slider.offsetWidth);
         dots.forEach((d, i) => d.classList.toggle('active', i === Math.abs(index)));
-    }
+    };
 
-    function closeModal(shouldBack = true) {
+    window.closeModal = function(shouldBack = true) {
         document.getElementById('productModal').classList.remove('active');
         if(shouldBack && window.history.state?.modal) history.back();
-    }
+    };
 
-    async function saveProduct() {
-        const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value, desc = document.getElementById('pDesc').value, colors = document.getElementById('pColors').value, sizes = document.getElementById('pSizes').value;
-        if(!title || !price || !imgs) return alert("البيانات ناقصة!");
-        await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify({ title, price, imgs: imgs.split('\n'), desc, colors, sizes }) });
-        location.reload();
-    }
+    window.addEventListener('popstate', () => window.closeModal(false));
+
+    window.selColor = function(c, el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); selCol = c; };
+    window.selSize = function(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; };
+
+    window.sendOrder = function() {
+        const qty = document.getElementById('orderQty').value, n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value, ct = document.getElementById('custCity').value, ad = document.getElementById('custAddress').value;
+        if(!selCol || !selSiz || !n || !ph) return alert("اختار اللون والمقاس!");
+        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nالعدد: ${qty}\nاللون: ${selCol}\nالمقاس: ${selSiz}\nالإجمالي: ${selectedProduct.price * qty} EGP\nالاسم: ${n}\nالموبايل: ${ph}`;
+        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
+    };
 
     async function loadStore() {
         const res = await fetch(`${dbURL}.json`);
@@ -182,22 +184,12 @@
         for (let id in data) {
             const p = data[id];
             grid.innerHTML += `
-                <div class="card" onclick='openProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
+                <div class="card" onclick='window.openProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
                     <input type="checkbox" class="select-box" value="${id}" style="display:none; position:absolute; top:10px; right:10px; z-index:10;" onclick="event.stopPropagation()">
                     <img src="${p.imgs ? p.imgs[0] : ''}">
                     <div class="card-info"><h3>${p.title}</h3><div class="price">${p.price} EGP</div></div>
                 </div>`;
         }
-    }
-
-    function selColor(c, el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); selCol = c; }
-    function selSize(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; }
-
-    function sendOrder() {
-        const qty = document.getElementById('orderQty').value, n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value, ct = document.getElementById('custCity').value, ad = document.getElementById('custAddress').value;
-        if(!selCol || !selSiz || !n || !ph) return alert("يرجى اختيار اللون والمقاس وبيانات الشحن!");
-        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nالعدد: ${qty}\nاللون: ${selCol}\nالمقاس: ${selSiz}\nالإجمالي: ${selectedProduct.price * qty} EGP\n----\nالاسم: ${n}\nالموبايل: ${ph}\nالعنوان: ${ct} - ${ad}`;
-        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
     }
     loadStore();
 </script>
