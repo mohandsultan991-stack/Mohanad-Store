@@ -60,7 +60,6 @@
 
 <div class="container" id="productsGrid"></div>
 
-<!-- لوحة التحكم -->
 <div id="adminPanel">
     <h3>إضافة منتج جديد 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
@@ -73,7 +72,6 @@
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إلغاء</button>
 </div>
 
-<!-- المودال -->
 <div id="productModal" class="product-modal">
     <span class="close-modal" onclick="closeModal()">×</span>
     <div class="slider-wrapper">
@@ -89,6 +87,7 @@
         <p style="font-weight:bold; margin-top:20px">المقاس:</p><div id="modalSizes" class="size-grid"></div>
 
         <div class="shipping-form" style="margin-top:30px;">
+            <p style="font-weight:bold; margin-bottom:5px;">بيانات الشحن:</p>
             <input type="text" id="custName" placeholder="الاسم بالكامل">
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
             <select id="custCity">
@@ -101,7 +100,9 @@
                 <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
                 <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
             </select>
-            <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
+            <textarea id="custAddress" rows="2" placeholder="العنوان بالتفصيل"></textarea>
+            <p style="font-weight:bold; margin-bottom:5px;">الكمية:</p>
+            <input type="number" id="custQty" value="1" min="1" style="width: 80px; text-align: center;">
             <button class="order-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
         </div>
     </div>
@@ -162,6 +163,8 @@
         if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
         if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
+        
+        document.getElementById('custQty').value = 1; // ريست للكمية
         modal.style.display = 'block';
         setTimeout(() => modal.classList.add('show'), 10);
         history.pushState({modal: true}, "");
@@ -195,12 +198,14 @@
         const ph = document.getElementById('custPhone').value;
         const city = document.getElementById('custCity').value;
         const addr = document.getElementById('custAddress').value;
+        const qty = document.getElementById('custQty').value;
 
-        if(!selCol || !selSiz || !n || !ph || !city || !addr) return alert("اختار اللون والمقاس واكمل كل بيانات الشحن!");
+        if(!selCol || !selSiz || !n || !ph || !city || !addr || !qty) return alert("اكمل كل البيانات واختار اللون والمقاس والكمية!");
 
         const msg = `طلب جديد من المتجر 🔥\n\n` +
                     `📦 المنتج: ${selectedProduct.title}\n` +
-                    `💰 السعر: ${selectedProduct.price} EGP\n` +
+                    `🔢 الكمية: ${qty}\n` +
+                    `💰 السعر (للقطعة): ${selectedProduct.price} EGP\n` +
                     `🎨 اللون: ${selCol}\n` +
                     `📏 المقاس: ${selSiz}\n\n` +
                     `👤 العميل: ${n}\n` +
