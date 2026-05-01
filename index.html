@@ -16,7 +16,6 @@
         .card-info { padding: 8px; text-align: right; }
         .price { font-weight: 900; color: #d00; }
 
-        /* مودال مودرن بالأنيميشن */
         .product-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #fff; z-index: 2000; overflow-y: auto; 
@@ -27,7 +26,6 @@
 
         .close-modal { font-size: 2rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #eee; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
         
-        /* سلايدر الصور والنقط */
         .slider-wrapper { position: relative; width: 100%; background: #f9f9f9; }
         .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
         .slider-container::-webkit-scrollbar { display: none; }
@@ -46,10 +44,10 @@
 
         .desc-box { background: #f8f8f8; padding: 15px; border-radius: 12px; margin: 15px 0; border-right: 4px solid #000; }
 
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border: 2px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border: 2px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 20px; }
         #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
         
-        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; background: #fafafa; }
+        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; background: #fafafa; font-family: inherit; font-size: 1rem; }
         .order-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 20px; font-weight: bold; border-radius: 18px; cursor: pointer; font-size: 1.1rem; }
     </style>
 </head>
@@ -62,6 +60,7 @@
 
 <div class="container" id="productsGrid"></div>
 
+<!-- لوحة التحكم -->
 <div id="adminPanel">
     <h3>إضافة منتج جديد 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
@@ -74,6 +73,7 @@
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; color:red; border:none; margin-top:10px;">إلغاء</button>
 </div>
 
+<!-- المودال -->
 <div id="productModal" class="product-modal">
     <span class="close-modal" onclick="closeModal()">×</span>
     <div class="slider-wrapper">
@@ -91,6 +91,16 @@
         <div class="shipping-form" style="margin-top:30px;">
             <input type="text" id="custName" placeholder="الاسم بالكامل">
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
+            <select id="custCity">
+                <option value="">اختر المحافظة</option>
+                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
+                <option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option>
+                <option>الإسماعيلية</option><option>المنوفية</option><option>المنيا</option><option>القليوبية</option>
+                <option>الوادي الجديد</option><option>السويس</option><option>الشرقية</option><option>أسوان</option>
+                <option>أسيوط</option><option>بني سويف</option><option>بورسعيد</option><option>دمياط</option>
+                <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
+                <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
+            </select>
             <textarea id="custAddress" rows="3" placeholder="العنوان بالتفصيل"></textarea>
             <button class="order-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
         </div>
@@ -140,27 +150,18 @@
         const modal = document.getElementById('productModal');
         const slider = document.getElementById('imageSlider');
         const dots = document.getElementById('dotsContainer');
-        
         slider.innerHTML = ""; dots.innerHTML = "";
         (p.imgs || []).forEach((u, i) => { 
             slider.innerHTML += `<img src="${u}">`; 
             dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
         });
-
         document.getElementById('modalTitle').innerText = p.title;
         document.getElementById('modalPrice').innerText = p.price + " EGP";
         document.getElementById('modalDesc').innerText = p.desc || "";
-        
         const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
-        if(p.colors) p.colors.split(',').forEach(c => { 
-            cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; 
-        });
-
+        if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
-        if(p.sizes) p.sizes.split(',').forEach(s => { 
-            sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; 
-        });
-
+        if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
         modal.style.display = 'block';
         setTimeout(() => modal.classList.add('show'), 10);
         history.pushState({modal: true}, "");
@@ -190,9 +191,23 @@
     function selectSize(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; }
 
     function sendOrder() {
-        const n = document.getElementById('custName').value, ph = document.getElementById('custPhone').value;
-        if(!selCol || !selSiz || !n || !ph) return alert("اختار اللون والمقاس واكتب بياناتك!");
-        const msg = `طلب جديد:\nالمنتج: ${selectedProduct.title}\nاللون: ${selCol}\nالمقاس: ${selSiz}\nالاسم: ${n}\nالهاتف: ${ph}`;
+        const n = document.getElementById('custName').value;
+        const ph = document.getElementById('custPhone').value;
+        const city = document.getElementById('custCity').value;
+        const addr = document.getElementById('custAddress').value;
+
+        if(!selCol || !selSiz || !n || !ph || !city || !addr) return alert("اختار اللون والمقاس واكمل كل بيانات الشحن!");
+
+        const msg = `طلب جديد من المتجر 🔥\n\n` +
+                    `📦 المنتج: ${selectedProduct.title}\n` +
+                    `💰 السعر: ${selectedProduct.price} EGP\n` +
+                    `🎨 اللون: ${selCol}\n` +
+                    `📏 المقاس: ${selSiz}\n\n` +
+                    `👤 العميل: ${n}\n` +
+                    `📞 الموبايل: ${ph}\n` +
+                    `📍 المحافظة: ${city}\n` +
+                    `🏠 العنوان: ${addr}`;
+
         window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
     }
 
