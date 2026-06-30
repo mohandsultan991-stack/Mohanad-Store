@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOHANAD STORE</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
         
         :root { 
             --main-gradient: linear-gradient(135deg, #ff3b30, #ff9500);
@@ -40,7 +40,6 @@
         .card-info h3 { margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .price { font-weight: 900; color: var(--price-color); font-size: 1.05rem; }
 
-        /* المودالات */
         .product-modal, .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; display: none; }
         .close-modal { font-size: 1.4rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #f2f2f7; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
@@ -72,7 +71,6 @@
         #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 26px; border: 1px solid rgba(0,0,0,0.05); z-index: 3000; width: 90%; max-width: 410px; border-radius: 28px; box-shadow: 0 24px 50px rgba(0,0,0,0.15); text-align: right; }
         #adminPanel input, #adminPanel textarea { width: 100%; padding: 13px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #e5e5ea; box-sizing: border-box; background: #f9f9f9; font-family: inherit; }
 
-        /* ستايل النجوم والتقييمات */
         .stars-display { color: #FFD700; font-size: 1.1rem; margin: 4px 0; }
         .rating-section { background: #f8f9fa; padding: 15px; border-radius: 16px; margin: 20px 0; }
         .review-box { background: #fff; padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #eee; }
@@ -82,11 +80,9 @@
         .star-rating-input span.active { color: #FFD700; }
         .submit-review-btn { background: var(--text-dark); color: #fff; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: bold; }
         
-        /* قسم منتجات أخرى */
         .more-products-title { font-weight: 900; font-size: 1.2rem; margin: 35px 0 15px 0; border-top: 2px solid #f2f2f7; padding-top: 20px; }
     </style>
     <script>
-        // تعريف دالة فتح لوحة التحكم فوراً في البداية
         window.show = function() {
             let p = prompt("ادخل الرقم السري للوحة التحكم:");
             if(p === "2026") {
@@ -200,12 +196,11 @@
     let allProducts = {};
     let selectedProductId = null, selectedProduct = null, selCol = "", selSiz = "";
     let currentInputStars = 5;
-
-    // حل مشكلة زر الرجوع في الموبايل نهائياً
     let isModalOpen = false;
+
     window.addEventListener('popstate', function(event) {
         if (isModalOpen) {
-            closeModal(true); // نقفل المودال بدون تكرار التاريخ
+            closeModal(true);
         }
     });
 
@@ -245,7 +240,7 @@
     async function saveProduct() {
         const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value;
         if(!title || !price || !imgs) return alert("املا الحقول الأساسية");
-        const data = { title, price, imgs: imgs.split('\n').filter(u => u.trim() !== ""), desc: document.getElementById('pDesc').value, colors: document.getElementById('pColors').value, sizes: document.getElementById('pSizes').value, reviews: "" };
+        const data = { title, price, imgs: imgs.split('\n').filter(u => u.trim() !== ""), desc: document.getElementById('pDesc').value, colors: document.getElementById('pColors').value, sizes: document.getElementById('pSizes').value };
         await fetch(`${dbURL}/products.json`, { method: 'POST', body: JSON.stringify(data) });
         location.reload();
     }
@@ -258,12 +253,10 @@
         }
     }
 
-    // فتح نافذة المنتج وعرض التقييمات وباقي المنتجات
     function openProduct(id, p) {
         selectedProductId = id;
         selectedProduct = p; selCol = ""; selSiz = "";
         
-        // إدارة الـ History عشان زر الرجوع
         if (!isModalOpen) {
             window.history.pushState({ modalOpen: true }, "");
             isModalOpen = true;
@@ -277,19 +270,15 @@
         document.getElementById('modalPrice').innerText = p.price + " EGP";
         document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف حالياً.";
         
-        // الألوان والمقاسات
         const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
         if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
         if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
         
         document.getElementById('custQty').value = 1;
-        setStarInput(5); // إعادة تعيين نجوم الإدخال
+        setStarInput(5);
 
-        // معالجة وعرض التقييمات (الأكثر حصولاً على نجوم أولاً)
         renderReviews(p.reviews);
-
-        // عرض باقي المنتجات بالأسفل
         renderRelatedProducts();
 
         modal.style.display = 'block';
@@ -307,4 +296,14 @@
     function selectColor(c, el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); selCol = c; }
     function selectSize(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; }
     
-    function u
+    function updateDots() {
+        const slider = document.getElementById('imageSlider'), dots = document.querySelectorAll('.dot');
+        const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+        dots.forEach((d, i) => d.classList.toggle('active', i === Math.abs(index)));
+    }
+
+    function setStarInput(rating) {
+        currentInputStars = rating;
+        const spans = document.querySelectorAll('#starInput span');
+        spans.forEach((span, i) => {
+            span.classList.toggle('a
