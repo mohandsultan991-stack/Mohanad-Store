@@ -40,6 +40,7 @@
         .card-info h3 { margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .price { font-weight: 900; color: var(--price-color); font-size: 1.05rem; }
 
+        /* المودالات */
         .product-modal, .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; display: none; }
         .close-modal { font-size: 1.4rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #f2f2f7; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
@@ -60,7 +61,7 @@
         .color-dot.active { box-shadow: 0 0 0 2px var(--text-dark); transform: scale(1.1); }
 
         .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 15px; margin-bottom: 14px; border: 1px solid #e5e5ea; border-radius: 14px; box-sizing: border-box; background: #fafafa; font-family: inherit; }
-        .add-to-cart-btn { width: 100%; background: var(--text-dark); color: #fff; border: none; padding: 18px; font-weight: 700; border-radius: 16px; cursor: pointer; font-size: 1rem; font-family: inherit; }
+        .add-to-cart-btn { width: 100%; background: var(--text-dark); color: #fff; border: none; padding: 18px; font-weight: 700; border-radius: 16px; cursor: pointer; font-size: 1rem; font-family: inherit; margin-top: 15px; }
         .whatsapp-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; font-weight: 700; border-radius: 16px; cursor: pointer; font-size: 1rem; font-family: inherit; }
 
         .cart-item { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 1px solid #f2f2f7; }
@@ -70,9 +71,22 @@
         
         #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 26px; border: 1px solid rgba(0,0,0,0.05); z-index: 3000; width: 90%; max-width: 410px; border-radius: 28px; box-shadow: 0 24px 50px rgba(0,0,0,0.15); text-align: right; }
         #adminPanel input, #adminPanel textarea { width: 100%; padding: 13px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #e5e5ea; box-sizing: border-box; background: #f9f9f9; font-family: inherit; }
+
+        /* ستايل النجوم والتقييمات */
+        .stars-display { color: #FFD700; font-size: 1.1rem; margin: 4px 0; }
+        .rating-section { background: #f8f9fa; padding: 15px; border-radius: 16px; margin: 20px 0; }
+        .review-box { background: #fff; padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #eee; }
+        .add-review-form { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .add-review-form input, .add-review-form textarea { width: 100%; padding: 10px; border: 1px solid #e5e5ea; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
+        .star-rating-input { display: flex; gap: 5px; font-size: 1.5rem; cursor: pointer; color: #ccc; margin-bottom: 5px; direction: ltr; justify-content: flex-end; }
+        .star-rating-input span.active { color: #FFD700; }
+        .submit-review-btn { background: var(--text-dark); color: #fff; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: bold; }
+        
+        /* قسم منتجات أخرى */
+        .more-products-title { font-weight: 900; font-size: 1.2rem; margin: 35px 0 15px 0; border-top: 2px solid #f2f2f7; padding-top: 20px; }
     </style>
     <script>
-        // تعريف الدالة هنا في البداية يضمن اشتغالها فوراً بالكونسول مهما حصل
+        // تعريف دالة فتح لوحة التحكم فوراً في البداية
         window.show = function() {
             let p = prompt("ادخل الرقم السري للوحة التحكم:");
             if(p === "2026") {
@@ -134,7 +148,7 @@
     <textarea id="pImgs" rows="3" placeholder="روابط الصور (رابط في كل سطر)"></textarea>
     <textarea id="pDesc" rows="3" placeholder="وصف المنتج بالتفصيل"></textarea>
     <input type="text" id="pColors" placeholder="الألوان المتاحة (مثال: black, red)">
-    <input type="text" id="pSizes" placeholder="المقاسات المتاحة (مثال: M, L, XL)"></textarea>
+    <input type="text" id="pSizes" placeholder="المقاسات المتاحة (مثال: M, L, XL)">
     <button onclick="saveProduct()" style="width:100%; background:var(--text-dark); color:#fff; padding:15px; border:none; border-radius:14px; font-weight:bold; cursor:pointer; font-family:inherit;">حفظ المنتج</button>
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; border:none; color:var(--price-color); margin-top:12px; cursor:pointer; font-weight:bold; font-family:inherit;">إلغاء</button>
 </div>
@@ -146,16 +160,36 @@
         <div id="dotsContainer" class="dots-container"></div>
     </div>
     <div class="details-content">
-        <h2 id="modalTitle" style="font-weight:900;"></h2>
-        <p id="modalPrice" style="font-size:1.6rem; font-weight:900; color:var(--price-color);"></p>
+        <h2 id="modalTitle" style="font-weight:900; margin-bottom: 2px;"></h2>
+        <div id="modalAvgStars" class="stars-display"></div>
+        <p id="modalPrice" style="font-size:1.6rem; font-weight:900; color:var(--price-color); margin-top:10px;"></p>
         <div id="modalDesc" style="background:#f2f2f7; padding:16px; border-radius:16px; margin:20px 0; font-size:0.95rem; line-height:1.6;"></div>
-        <p style="font-weight:700;">اللون:</p><div id="modalColors"></div>
-        <p style="font-weight:700; margin-top:24px;">المقاس:</p><div id="modalSizes" class="size-grid"></div>
+        
+        <p style="font-weight:700;">اللون المتاح:</p><div id="modalColors"></div>
+        <p style="font-weight:700; margin-top:24px;">المقاس المتاح:</p><div id="modalSizes" class="size-grid"></div>
+        
         <p style="font-weight:700; margin-top:24px;">الكمية:</p>
         <input type="number" id="custQty" value="1" min="1" style="width: 80px; padding: 12px; border-radius: 14px; border: 1px solid #e5e5ea; text-align:center; background:#f2f2f7; font-weight:bold;">
-        <div style="margin-top:35px;">
-            <button class="add-to-cart-btn" onclick="addToCart()">إضافة إلى السلة 🛒</button>
+        
+        <button class="add-to-cart-btn" onclick="addToCart()">إضافة إلى السلة 🛒</button>
+
+        <div class="rating-section">
+            <h3 style="margin-top:0; font-weight:900;">تقييمات العملاء ⭐</h3>
+            <div id="reviewsContainer">لا توجد تقييمات لهذا المنتج بعد. كن أول من يقيم!</div>
+            
+            <div class="add-review-form">
+                <h4 style="margin: 15px 0 5px 0;">أضف تقييمك:</h4>
+                <div class="star-rating-input" id="starInput">
+                    <span onclick="setStarInput(1)">★</span><span onclick="setStarInput(2)">★</span><span onclick="setStarInput(3)">★</span><span onclick="setStarInput(4)">★</span><span onclick="setStarInput(5)">★</span>
+                </div>
+                <input type="text" id="revName" placeholder="اسمك">
+                <textarea id="revComment" rows="2" placeholder="اكتب تعليقك هنا..."></textarea>
+                <button class="submit-review-btn" onclick="submitReview()">إرسال التقييم</button>
+            </div>
         </div>
+
+        <div class="more-products-title">باقي منتجات المتجر 🔥</div>
+        <div class="container" id="relatedProductsGrid" style="padding:0;"></div>
     </div>
 </div>
 
@@ -163,7 +197,17 @@
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com";
     const myPhone = "201044667187";
     let cart = [];
-    let selectedProduct = null, selCol = "", selSiz = "";
+    let allProducts = {};
+    let selectedProductId = null, selectedProduct = null, selCol = "", selSiz = "";
+    let currentInputStars = 5;
+
+    // حل مشكلة زر الرجوع في الموبايل نهائياً
+    let isModalOpen = false;
+    window.addEventListener('popstate', function(event) {
+        if (isModalOpen) {
+            closeModal(true); // نقفل المودال بدون تكرار التاريخ
+        }
+    });
 
     function addToCart() {
         const qty = parseInt(document.getElementById('custQty').value);
@@ -201,7 +245,7 @@
     async function saveProduct() {
         const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value;
         if(!title || !price || !imgs) return alert("املا الحقول الأساسية");
-        const data = { title, price, imgs: imgs.split('\n').filter(u => u.trim() !== ""), desc: document.getElementById('pDesc').value, colors: document.getElementById('pColors').value, sizes: document.getElementById('pSizes').value };
+        const data = { title, price, imgs: imgs.split('\n').filter(u => u.trim() !== ""), desc: document.getElementById('pDesc').value, colors: document.getElementById('pColors').value, sizes: document.getElementById('pSizes').value, reviews: "" };
         await fetch(`${dbURL}/products.json`, { method: 'POST', body: JSON.stringify(data) });
         location.reload();
     }
@@ -214,44 +258,53 @@
         }
     }
 
-    function openProduct(p) {
+    // فتح نافذة المنتج وعرض التقييمات وباقي المنتجات
+    function openProduct(id, p) {
+        selectedProductId = id;
         selectedProduct = p; selCol = ""; selSiz = "";
+        
+        // إدارة الـ History عشان زر الرجوع
+        if (!isModalOpen) {
+            window.history.pushState({ modalOpen: true }, "");
+            isModalOpen = true;
+        }
+
         const modal = document.getElementById('productModal'), slider = document.getElementById('imageSlider'), dots = document.getElementById('dotsContainer');
         slider.innerHTML = ""; dots.innerHTML = "";
         (p.imgs || []).forEach((u, i) => { slider.innerHTML += `<img src="${u}">`; dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`; });
+        
         document.getElementById('modalTitle').innerText = p.title;
         document.getElementById('modalPrice').innerText = p.price + " EGP";
         document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف حالياً.";
+        
+        // الألوان والمقاسات
         const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
         if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
         if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
-        document.getElementById('custQty').value = 1; modal.style.display = 'block';
+        
+        document.getElementById('custQty').value = 1;
+        setStarInput(5); // إعادة تعيين نجوم الإدخال
+
+        // معالجة وعرض التقييمات (الأكثر حصولاً على نجوم أولاً)
+        renderReviews(p.reviews);
+
+        // عرض باقي المنتجات بالأسفل
+        renderRelatedProducts();
+
+        modal.style.display = 'block';
+        modal.scrollTo(0,0);
     }
 
-    function closeModal() { document.getElementById('productModal').style.display = 'none'; }
+    function closeModal(fromPopState = false) {
+        document.getElementById('productModal').style.display = 'none';
+        isModalOpen = false;
+        if (!fromPopState) {
+            window.history.back();
+        }
+    }
+
     function selectColor(c, el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); selCol = c; }
     function selectSize(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; }
-    function updateDots() {
-        const slider = document.getElementById('imageSlider'), dots = document.querySelectorAll('.dot');
-        const index = Math.round(slider.scrollLeft / slider.offsetWidth);
-        dots.forEach((d, i) => d.classList.toggle('active', i === Math.abs(index)));
-    }
-
-    async function loadStore() {
-        try {
-            const res = await fetch(`${dbURL}/products.json`);
-            const data = await res.json();
-            const grid = document.getElementById('productsGrid'); grid.innerHTML = "";
-            if(!data) { grid.innerHTML = `<div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text-muted); font-weight:bold;">لا يوجد منتجات حالياً. افتح الـ الكونسول واكتب show() لإضافة منتجات.</div>`; return; }
-            for (let id in data) {
-                const p = data[id]; const card = document.createElement('div'); card.className = 'card'; card.onclick = () => openProduct(p);
-                card.innerHTML = `<input type="checkbox" class="select-box" value="${id}" style="display:none; position:absolute; top:12px; right:12px; z-index:10; width:18px; height:18px;" onclick="event.stopPropagation()"><img src="${p.imgs?.[0] || ''}"><div class="card-info"><h3>${p.title}</h3><div class="price">${p.price} EGP</div></div>`;
-                grid.appendChild(card);
-            }
-        } catch(e) { console.error(e); }
-    }
-    loadStore();
-</script>
-</body>
-</html>
+    
+    function u
