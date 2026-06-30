@@ -41,7 +41,8 @@
             transform: translateY(-100%);
         }
         
-        .logo-title { margin: 0; font-size: 1.3rem; font-weight: 900; letter-spacing: 0.5px; }
+        /* جعل العنوان قابل للضغط لفتح لوحة التحكم سرّاً */
+        .logo-title { margin: 0; font-size: 1.3rem; font-weight: 900; letter-spacing: 0.5px; cursor: pointer; user-select: none; }
 
         .cart-header-btn {
             background: #f0f0f2;
@@ -138,12 +139,12 @@
         <span class="cart-count" id="cartCount">0</span>
     </button>
     <button id="multiDeleteBtn" style="display:none; background:var(--price-color); color:#fff; border:none; padding:8px 14px; border-radius:20px; font-family:inherit; font-weight:bold; cursor:pointer;" onclick="deleteSelected()">حذف 🗑️</button>
-    <h1 class="logo-title">MOHANAD STORE</h1>
+    
+    <h1 class="logo-title" onclick="handleLogoClick()">MOHANAD STORE</h1>
 </header>
 
 <div class="container" id="productsGrid"></div>
 
-<!-- مودال السلة -->
 <div id="cartModal" class="cart-modal">
     <span class="close-modal" onclick="closeCart()">×</span>
     <div style="padding: 20px; text-align: right; margin-top: 40px;">
@@ -171,7 +172,6 @@
     </div>
 </div>
 
-<!-- لوحة التحكم -->
 <div id="adminPanel">
     <h3 style="margin-top:0;">إضافة منتج جديد 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
@@ -184,7 +184,6 @@
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; border:none; color:var(--price-color); margin-top:10px; font-family:inherit; cursor:pointer;">إلغاء</button>
 </div>
 
-<!-- مودال المنتج -->
 <div id="productModal" class="product-modal">
     <span class="close-modal" onclick="closeModal()">×</span>
     <div class="slider-wrapper">
@@ -214,7 +213,7 @@
     let cart = [];
     let selectedProduct = null, selCol = "", selSiz = "";
 
-    // تأثير الهيدر السكرول
+    // إخفاء وإظهار الهيدر مع السكرول
     let lastScrollTop = 0;
     const header = document.getElementById('mainHeader');
     window.addEventListener('scroll', () => {
@@ -226,6 +225,28 @@
         }
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     });
+
+    // دالة فتح لوحة التحكم بالضغط 3 مرات متتالية على اللوجو
+    let clickCount = 0;
+    let clickTimeout;
+    function handleLogoClick() {
+        clickCount++;
+        clearTimeout(clickTimeout);
+        if (clickCount === 3) {
+            clickCount = 0;
+            let passwordInput = prompt("ادخل الرقم السري للوحة التحكم:");
+            if (passwordInput === "2026") {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('multiDeleteBtn').style.display = 'block';
+                document.querySelectorAll('.select-box').forEach(el => el.style.display = 'block');
+                alert("مرحباً بك يا مهند في لوحة التحكم 👋");
+            } else if (passwordInput !== null) {
+                alert("الرقم السري غير صحيح!");
+            }
+        } else {
+            clickTimeout = setTimeout(() => { clickCount = 0; }, 400);
+        }
+    }
 
     function addToCart() {
         const qty = parseInt(document.getElementById('custQty').value);
@@ -316,16 +337,6 @@
         closeCart();
     }
 
-    window.show = function() {
-        let p = prompt("Password:");
-        if(p === "123") {
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('multiDeleteBtn').style.display = 'block';
-            document.querySelectorAll('.select-box').forEach(el => el.style.display = 'block');
-            return "مرحباً يا مهند";
-        }
-    };
-
     async function saveProduct() {
         const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value;
         if(!title || !price || !imgs) return alert("اكمل البيانات");
@@ -337,7 +348,7 @@
     async function deleteSelected() {
         const selected = document.querySelectorAll('.select-box:checked');
         if(selected.length === 0) return alert("حدد منتج أولاً");
-        if(confirm("حذف؟")) {
+        if(confirm("هل أنت متأكد من حذف المنتجات المحددة؟")) {
             for (let box of selected) await fetch(`${dbURL}/${box.value}.json`, { method: 'DELETE' });
             location.reload();
         }
@@ -376,20 +387,4 @@
     function updateDots() {
         const slider = document.getElementById('imageSlider');
         const dots = document.querySelectorAll('.dot');
-        const index = Math.round(slider.scrollLeft / slider.offsetWidth);
-        dots.forEach((d, i) => d.classList.toggle('active', i === Math.abs(index)));
-    }
-
-    async function loadStore() {
-        try {
-            const res = await fetch(`${dbURL}.json`);
-            const data = await res.json();
-            const grid = document.getElementById('productsGrid'); grid.innerHTML = "";
-            if(!data) return;
-            for (let id in data) {
-                const p = data[id];
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => openProduct(p);
-                card.innerHTML = `
-       
+        const index = Math.round(slider.scrollLeft / slider.offsetWid
