@@ -5,88 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOHANAD STORE</title>
     <style>
-        :root { --main: #000; --bg: #ffffff; --accent: #25D366; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: var(--main); overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         
-        /* الواجهة الرئيسية */
-        .hero {
-            width: 100%; height: 100vh; background: #000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #fff; text-align: center;
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070');
-            background-size: cover; background-position: center;
+        :root { 
+            --main: #111111; 
+            --bg: #fbfbfb; 
+            --card-bg: #ffffff;
+            --accent: #25D366; 
+            --text-muted: #666;
+            --price-color: #ff3b30;
         }
-        .hero h1 { font-size: 3rem; margin: 0; }
-        .scroll-down { margin-top: 20px; animation: bounce 2s infinite; font-size: 0.9rem; }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} }
-
-        header { background: #fff; padding: 15px 20px; border-bottom: 2px solid #000; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; }
         
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px 12px; max-width: 800px; margin: 0 auto; }
-        .card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #eee; position: relative; cursor: pointer; }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-info { padding: 10px; text-align: right; }
-        .price { font-weight: 900; color: #d00; }
+        body { 
+            font-family: 'Cairo', Tahoma, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            color: var(--main); 
+            overflow-x: hidden; 
+        }
 
-        .cart-float { position: fixed; bottom: 20px; right: 20px; background: var(--main); color: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 1000; }
-        .cart-count { position: absolute; top: 0; left: 0; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-
-        .product-modal, .cart-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; display: none; opacity: 0; transition: 0.3s; }
-        .show { display: block !important; opacity: 1; }
-        .close-modal { font-size: 2rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #eee; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
+        /* الهيدر الذكي - يختفي مع السكرول */
+        header { 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #eee; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            transition: transform 0.3s ease;
+        }
+        header.hide {
+            transform: translateY(-100%);
+        }
         
+        .logo-title { margin: 0; font-size: 1.3rem; font-weight: 900; letter-spacing: 0.5px; }
+
+        /* ستايل السلة المودرن في الهيدر */
+        .cart-header-btn {
+            background: #f0f0f2;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .cart-header-btn:active { transform: scale(0.95); background: #e4e4e7; }
+        .cart-count { 
+            background: var(--main); 
+            color: white; 
+            border-radius: 50%; 
+            min-width: 20px; 
+            height: 20px; 
+            font-size: 11px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            padding: 2px;
+        }
+
+        /* كروت المنتجات المودرن */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; max-width: 600px; margin: 0 auto; }
+        .card { 
+            background: var(--card-bg); 
+            cursor: pointer; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            border: none;
+            position: relative; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .card:active { transform: scale(0.97); }
+        .card img { width: 100%; height: 190px; object-fit: cover; background: #f5f5f7; }
+        .card-info { padding: 12px; text-align: right; }
+        .card-info h3 { margin: 0 0 6px 0; font-size: 0.95rem; font-weight: 700; color: var(--main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .price { font-weight: 900; color: var(--price-color); font-size: 1rem; }
+
+        /* المودال الشفاف المودرن */
+        .product-modal, .cart-modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #fff; z-index: 2000; overflow-y: auto; 
+            display: none; opacity: 0; transform: translateY(30px);
+            transition: opacity 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94), transform 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+        }
+        .show { display: block; opacity: 1; transform: translateY(0); }
+
+        .close-modal { font-size: 1.5rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #f0f0f2; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .close-modal:active { background: #e4e4e7; }
+        
+        .slider-wrapper { position: relative; width: 100%; background: #f5f5f7; }
         .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; max-height: 450px; object-fit: contain; }
-        .dots-container { display: flex; justify-content: center; gap: 6px; padding: 10px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; }
-        .dot.active { background: #000; width: 18px; border-radius: 10px; }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 400px; }
+        
+        .dots-container { display: flex; justify-content: center; gap: 6px; padding: 12px 0; position: absolute; bottom: 10px; width: 100%; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: 0.2s; }
+        .dot.active { background: var(--main); width: 14px; border-radius: 10px; }
 
-        .details-content { padding: 20px; text-align: right; }
-        .size-btn { border: 1.5px solid #ddd; padding: 10px 15px; cursor: pointer; border-radius: 8px; display: inline-block; margin: 5px; font-weight: bold; }
-        .size-btn.active { background: #000; color: #fff; }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; display: inline-block; margin-left: 10px; cursor: pointer; }
-        .color-dot.active { border: 2px solid #000; transform: scale(1.1); }
+        .details-content { padding: 24px 20px 50px 20px; text-align: right; }
+        .size-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .size-btn { border: 1px solid #e4e4e7; padding: 10px 20px; cursor: pointer; border-radius: 12px; font-weight: bold; background: #fff; font-size: 0.9rem; transition: all 0.2s; }
+        .size-btn.active { background: var(--main); color: #fff; border-color: var(--main); }
+        
+        .color-dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #e4e4e7; display: inline-block; margin-left: 10px; cursor: pointer; transition: transform 0.2s; }
+        .color-dot.active { box-shadow: 0 0 0 2px var(--main); transform: scale(1.1); }
 
-        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #eee; border-radius: 10px; font-family: inherit; }
-        .add-btn { width: 100%; background: #000; color: #fff; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        .wa-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid #e4e4e7; border-radius: 12px; box-sizing: border-box; background: #fff; font-family: inherit; font-size: 0.95rem; }
+        .shipping-form input:focus, .shipping-form select:focus, .shipping-form textarea:focus { border-color: var(--main); outline: none; }
+        
+        .add-to-cart-btn { width: 100%; background: var(--main); color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; font-size: 1rem; font-family: inherit; transition: opacity 0.2s; }
+        .add-to-cart-btn:active { opacity: 0.9; }
+        
+        .whatsapp-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; font-size: 1rem; font-family: inherit; }
 
-        .cart-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
-        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
-
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border: 2px solid #000; z-index: 3000; width: 90%; max-width: 400px; border-radius: 15px; }
-        #adminPanel input, #adminPanel textarea { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        /* ستايل السلة المودرن */
+        .cart-item { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 1px solid #f0f0f2; }
+        .cart-item img { width: 65px; height: 65px; object-fit: cover; border-radius: 12px; background: #f5f5f7; }
+        .cart-item-info { flex: 1; text-align: right; font-size: 0.9rem; }
+        .remove-item { color: var(--price-color); cursor: pointer; font-size: 13px; margin-top: 6px; display: inline-block; font-weight: bold; }
+        
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 24px; border: 1px solid #eee; z-index: 3000; width: 90%; max-width: 400px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        #adminPanel input, #adminPanel textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #e4e4e7; font-family: inherit; }
     </style>
 </head>
 <body>
 
-<div class="hero">
-    <h1>MOHANAD STORE</h1>
-    <p>Collection 2026</p>
-    <div class="scroll-down">اسحب لتصفح المنتجات ↓</div>
-</div>
-
-<header>
-    <button id="delBtn" style="display:none; background:red; color:#fff; border:none; padding:5px 10px; border-radius:5px;" onclick="deleteSelected()">حذف 🗑️</button>
-    <h2 style="margin:0; font-size: 1.1rem;">كل المنتجات</h2>
+<!-- الهيدر المطور وبداخله السلة وزرار الحذف -->
+<header id="mainHeader">
+    <button class="cart-header-btn" onclick="openCart()">
+        <span>السلة 🛒</span>
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button id="multiDeleteBtn" style="display:none; background:var(--price-color); color:#fff; border:none; padding:8px 14px; border-radius:20px; font-family:inherit; font-weight:bold; cursor:pointer;" onclick="deleteSelected()">حذف 🗑️</button>
+    <h1 class="logo-title">MOHANAD STORE</h1>
 </header>
 
 <div class="container" id="productsGrid"></div>
 
-<div class="cart-float" onclick="openCart()">
-    🛒 <span class="cart-count" id="cartCount">0</span>
-</div>
-
+<!-- مودال السلة -->
 <div id="cartModal" class="cart-modal">
     <span class="close-modal" onclick="closeCart()">×</span>
-    <div style="padding: 20px; text-align: right; margin-top: 50px;">
-        <h2>سلة المشتريات 🛍️</h2>
+    <div style="padding: 20px; text-align: right; margin-top: 40px;">
+        <h2 style="font-weight:900;">سلة المشتريات 🛍️</h2>
         <div id="cartItems"></div>
-        <div id="cartTotal" style="margin: 20px 0; font-weight: 900; font-size: 1.3rem;"></div>
-        <div class="shipping-form" id="shippingSection" style="display:none;">
-            <input type="text" id="cName" placeholder="الاسم بالكامل">
-            <input type="tel" id="cPhone" placeholder="رقم الموبايل">
-            <select id="cCity">
+        <div id="cartTotal" style="margin: 24px 0; font-weight: 900; font-size: 1.3rem;"></div>
+        
+        <div class="shipping-form" id="cartShippingForm" style="display:none;">
+            <h3 style="font-weight:700; margin-bottom:15px;">بيانات التوصيل</h3>
+            <input type="text" id="custName" placeholder="الاسم بالكامل">
+            <input type="tel" id="custPhone" placeholder="رقم الموبايل">
+            <select id="custCity">
                 <option value="">اختر المحافظة</option>
                 <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
                 <option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option>
@@ -96,161 +176,212 @@
                 <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
                 <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
             </select>
-            <textarea id="cAddr" rows="2" placeholder="العنوان بالتفصيل"></textarea>
-            <button class="wa-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
+            <textarea id="custAddress" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، رقم العمارة)"></textarea>
+            <button class="whatsapp-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
         </div>
     </div>
 </div>
 
-<div id="productModal" class="product-modal">
-    <span class="close-modal" onclick="closeModal()">×</span>
-    <div class="slider-container" id="imageSlider" onscroll="updateDots()"></div>
-    <div id="dotsContainer" class="dots-container"></div>
-    <div class="details-content">
-        <h2 id="mTitle"></h2>
-        <p id="mPrice" style="font-size:1.5rem; font-weight:900; color:#d00;"></p>
-        <div id="mDesc" style="background:#f9f9f9; padding:15px; border-radius:10px; margin-bottom:15px;"></div>
-        <p>اللون:</p><div id="mColors"></div>
-        <p style="margin-top:15px">المقاس:</p><div id="mSizes"></div>
-        <p style="margin-top:15px">الكمية:</p>
-        <input type="number" id="mQty" value="1" min="1" style="width:60px; padding:8px; border-radius:5px; border:1px solid #ddd;">
-        <button class="add-btn" style="margin-top:20px" onclick="addToCart()">إضافة للسلة 🛒</button>
-    </div>
+<!-- لوحة التحكم -->
+<div id="adminPanel">
+    <h3 style="margin-top:0;">إضافة منتج جديد 🛠️</h3>
+    <input type="text" id="pTitle" placeholder="اسم المنتج">
+    <input type="number" id="pPrice" placeholder="السعر">
+    <textarea id="pImgs" rows="2" placeholder="روابط الصور (رابط في كل سطر)"></textarea>
+    <textarea id="pDesc" rows="2" placeholder="الوصف"></textarea>
+    <input type="text" id="pColors" placeholder="الألوان (مثال: black, red)">
+    <input type="text" id="pSizes" placeholder="المقاسات (مثال: M, L, XL)">
+    <button onclick="saveProduct()" style="width:100%; background:var(--main); color:#fff; padding:14px; border:none; border-radius:12px; font-weight:bold; font-family:inherit; cursor:pointer;">حفظ</button>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; border:none; color:var(--price-color); margin-top:10px; font-family:inherit; cursor:pointer;">إلغاء</button>
 </div>
 
-<div id="adminPanel">
-    <h3>إضافة منتج 🛠️</h3>
-    <input type="text" id="pTitle" placeholder="الاسم">
-    <input type="number" id="pPrice" placeholder="السعر">
-    <textarea id="pImgs" placeholder="روابط الصور (كل رابط في سطر)"></textarea>
-    <textarea id="pDesc" placeholder="الوصف"></textarea>
-    <input type="text" id="pColors" placeholder="الألوان (مثال: red, black)">
-    <input type="text" id="pSizes" placeholder="المقاسات (مثال: M, L, XL)">
-    <button onclick="saveProduct()" style="width:100%; background:#000; color:#fff; padding:10px; border:none; border-radius:5px;">حفظ</button>
+<!-- مودال المنتج -->
+<div id="productModal" class="product-modal">
+    <span class="close-modal" onclick="closeModal()">×</span>
+    <div class="slider-wrapper">
+        <div id="imageSlider" class="slider-container" onscroll="updateDots()"></div>
+        <div id="dotsContainer" class="dots-container"></div>
+    </div>
+    <div class="details-content">
+        <h2 id="modalTitle" style="font-weight:900; margin:0 0 10px 0;"></h2>
+        <p id="modalPrice" style="font-size:1.5rem; font-weight:900; color:var(--price-color); margin:0 0 20px 0;"></p>
+        <div id="modalDesc" style="background:#f5f5f7; padding:16px; border-radius:14px; margin:20px 0; font-size:0.95rem; line-height:1.6; color:#444;"></div>
+        
+        <p style="font-weight:700; margin-bottom:8px;">اللون:</p><div id="modalColors"></div>
+        <p style="font-weight:700; margin:24px 0 8px 0;">المقاس:</p><div id="modalSizes" class="size-grid"></div>
+        
+        <p style="font-weight:700; margin:24px 0 8px 0;">الكمية:</p>
+        <input type="number" id="custQty" value="1" min="1" style="width: 70px; padding: 12px; border-radius: 12px; border: 1px solid #e4e4e7; font-family:inherit; font-weight:bold; text-align:center;">
+        
+        <div style="margin-top:32px;">
+            <button class="add-to-cart-btn" onclick="addToCart()">إضافة للسلة 🛒</button>
+        </div>
+    </div>
 </div>
 
 <script>
     const dbURL = "https://mohanadstore-2cb02-default-rtdb.firebaseio.com/products";
     const myPhone = "201044667187";
-    
-    let cart = JSON.parse(localStorage.getItem('mohanad_cart')) || [];
-    let currentP = null, selCol = "", selSiz = "";
+    let cart = [];
+    let selectedProduct = null, selCol = "", selSiz = "";
 
-    window.onload = () => { updateCartUI(); loadStore(); };
-    window.addEventListener('popstate', () => { closeModal(); closeCart(); });
-
-    async function loadStore() {
-        const res = await fetch(`${dbURL}.json`);
-        const data = await res.json();
-        const grid = document.getElementById('productsGrid');
-        grid.innerHTML = "";
-        if(!data) return;
-        for (let id in data) {
-            const p = data[id];
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => openProduct(p, id);
-            card.innerHTML = `
-                <input type="checkbox" class="admin-check" value="${id}" style="display:none; position:absolute; top:10px; right:10px; z-index:5;" onclick="event.stopPropagation()">
-                <img src="${p.imgs ? p.imgs[0] : ''}">
-                <div class="card-info"><h3>${p.title}</h3><div class="price">${p.price} EGP</div></div>
-            `;
-            grid.appendChild(card);
+    // ميزة إخفاء الهيدر مع السكرول (زي فيسبوك)
+    let lastScrollTop = 0;
+    const header = document.getElementById('mainHeader');
+    window.addEventListener('scroll', () => {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop && scrollTop > 60) {
+            header.classList.add('hide'); // السكرول لتحت -> إخفاء
+        } else {
+            header.classList.remove('hide'); // السكرول لفوق -> إظهار
         }
-    }
-
-    function openProduct(p, id) {
-        currentP = p; selCol = ""; selSiz = "";
-        document.getElementById('imageSlider').innerHTML = p.imgs.map(u => `<img src="${u}">`).join('');
-        document.getElementById('dotsContainer').innerHTML = p.imgs.map((_,i) => `<div class="dot ${i==0?'active':''}"></div>`).join('');
-        document.getElementById('mTitle').innerText = p.title;
-        document.getElementById('mPrice').innerText = p.price + " EGP";
-        document.getElementById('mDesc').innerText = p.desc || "";
-        document.getElementById('mColors').innerHTML = p.colors ? p.colors.split(',').map(c => `<div class="color-dot" style="background:${c.trim()}" onclick="selCol='${c.trim()}';document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));this.classList.add('active')"></div>`).join('') : '';
-        document.getElementById('mSizes').innerHTML = p.sizes ? p.sizes.split(',').map(s => `<div class="size-btn" onclick="selSiz='${s.trim()}';document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">${s.trim()}</div>`).join('') : '';
-        document.getElementById('mQty').value = 1;
-        document.getElementById('productModal').classList.add('show');
-        history.pushState({p:1}, "");
-    }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
 
     function addToCart() {
-        const qty = parseInt(document.getElementById('mQty').value);
-        if(!selCol || !selSiz || qty < 1) return alert("اختار اللون والمقاس!");
-        cart.push({ id: Date.now(), title: currentP.title, price: currentP.price, color: selCol, size: selSiz, qty, img: currentP.imgs[0] });
-        localStorage.setItem('mohanad_cart', JSON.stringify(cart));
+        const qty = parseInt(document.getElementById('custQty').value);
+        if(!selCol || !selSiz || qty < 1) return alert("اختار اللون والمقاس والكمية أولاً!");
+        
+        const item = {
+            id: Date.now(),
+            title: selectedProduct.title,
+            price: selectedProduct.price,
+            color: selCol,
+            size: selSiz,
+            qty: qty,
+            img: selectedProduct.imgs && selectedProduct.imgs[0] ? selectedProduct.imgs[0] : ''
+        };
+        
+        cart.push(item);
         updateCartUI();
-        alert("تمت الإضافة!");
+        alert("تمت إضافة المنتج إلى السلة بنجاح! 🎉");
         closeModal();
     }
 
     function updateCartUI() {
         document.getElementById('cartCount').innerText = cart.length;
         const itemsDiv = document.getElementById('cartItems');
-        let total = 0; itemsDiv.innerHTML = "";
+        const form = document.getElementById('cartShippingForm');
+        itemsDiv.innerHTML = "";
+        
+        let total = 0;
         cart.forEach(item => {
             total += (item.price * item.qty);
-            itemsDiv.innerHTML += `<div class="cart-item"><img src="${item.img}"><div style="flex:1"><b>${item.title}</b><br><small>${item.color} | ${item.size} | ع:${item.qty}</small></div><div style="color:red" onclick="removeItem(${item.id})">🗑️</div></div>`;
+            itemsDiv.innerHTML += `
+                <div class="cart-item">
+                    <img src="${item.img}">
+                    <div class="cart-item-info">
+                        <strong style="font-size:0.95rem;">${item.title}</strong><br>
+                        <span style="color:var(--text-muted); font-size:0.85rem;">اللون: ${item.color} | المقاس: ${item.size} | العدد: ${item.qty}</span><br>
+                        <span style="color:var(--price-color); font-weight:700;">${item.price * item.qty} EGP</span><br>
+                        <span class="remove-item" onclick="removeItem(${item.id})">حذف 🗑️</span>
+                    </div>
+                </div>
+            `;
         });
-        document.getElementById('cartTotal').innerText = total > 0 ? "الإجمالي: " + total + " EGP" : "السلة فاضية";
-        document.getElementById('shippingSection').style.display = cart.length > 0 ? 'block' : 'none';
+        
+        document.getElementById('cartTotal').innerText = cart.length > 0 ? `إجمالي الحساب: ${total} EGP` : "السلة فارغة حالياً 🛒";
+        form.style.display = cart.length > 0 ? 'block' : 'none';
     }
 
     function removeItem(id) {
         cart = cart.filter(i => i.id !== id);
-        localStorage.setItem('mohanad_cart', JSON.stringify(cart));
         updateCartUI();
     }
 
-    function sendOrder() {
-        const n = document.getElementById('cName').value, ph = document.getElementById('cPhone').value, city = document.getElementById('cCity').value, addr = document.getElementById('cAddr').value;
-        if(!n || !ph || !city || !addr) return alert("اكمل البيانات!");
-        let items = cart.map((it, i) => `${i+1}- ${it.title} (${it.color}/${it.size}) ع:${it.qty}`).join('\n');
-        let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-        const msg = `طلب جديد 🔥\n\nالمنتجات:\n${items}\n\nالإجمالي: ${total} EGP\n\nالاسم: ${n}\nموبايل: ${ph}\nالمحافظة: ${city}\nالعنوان: ${addr}`;
-        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
-        cart = []; localStorage.removeItem('mohanad_cart'); updateCartUI(); closeCart();
+    function openCart() { 
+        document.getElementById('cartModal').style.display = 'block';
+        setTimeout(() => document.getElementById('cartModal').classList.add('show'), 10);
+    }
+    function closeCart() { 
+        document.getElementById('cartModal').classList.remove('show');
+        setTimeout(() => document.getElementById('cartModal').style.display = 'none', 300);
     }
 
-    function closeModal() { document.getElementById('productModal').classList.remove('show'); }
-    function openCart() { document.getElementById('cartModal').classList.add('show'); history.pushState({c:1}, ""); }
-    function closeCart() { document.getElementById('cartModal').classList.remove('show'); }
-    function updateDots() {
-        const s = document.getElementById('imageSlider'); const dots = document.querySelectorAll('.dot');
-        const i = Math.round(s.scrollLeft / s.offsetWidth);
-        dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    function sendOrder() {
+        const n = document.getElementById('custName').value;
+        const ph = document.getElementById('custPhone').value;
+        const city = document.getElementById('custCity').value;
+        const addr = document.getElementById('custAddress').value;
+
+        if(!n || !ph || !city || !addr) return alert("من فضلك اكمل بيانات الشحن بالتفصيل!");
+
+        let productsText = "";
+        let totalAll = 0;
+        cart.forEach((item, index) => {
+            productsText += `${index + 1}- ${item.title}\n   (اللون: ${item.color} | المقاس: ${item.size} | العدد: ${item.qty})\n`;
+            totalAll += (item.price * item.qty);
+        });
+
+        const msg = `طلب جديد من المتجر 🔥\n\n` +
+                    `📦 المنتجات:\n${productsText}\n` +
+                    `💰 إجمالي الحساب: ${totalAll} EGP\n\n` +
+                    `👤 العميل: ${n}\n` +
+                    `📞 الموبايل: ${ph}\n` +
+                    `📍 المحافظة: ${city}\n` +
+                    `🏠 العنوان: ${addr}`;
+
+        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(msg)}`);
+        cart = [];
+        updateCartUI();
+        closeCart();
     }
 
     window.show = function() {
-        let p = prompt("Pass:");
+        let p = prompt("Password:");
         if(p === "123") {
-            document.getElementById('adminPanel').style.display='block';
-            document.getElementById('delBtn').style.display='block';
-            document.querySelectorAll('.admin-check').forEach(c => c.style.display='block');
-            return "Admin Mode";
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('multiDeleteBtn').style.display = 'block';
+            return "مرحباً يا مهند";
         }
     };
 
     async function saveProduct() {
-        const data = { 
-            title: document.getElementById('pTitle').value, 
-            price: document.getElementById('pPrice').value, 
-            imgs: document.getElementById('pImgs').value.split('\n').filter(u => u.trim() !== ""), 
-            desc: document.getElementById('pDesc').value, 
-            colors: document.getElementById('pColors').value, 
-            sizes: document.getElementById('pSizes').value 
-        };
+        const title = document.getElementById('pTitle').value, price = document.getElementById('pPrice').value, imgs = document.getElementById('pImgs').value;
+        if(!title || !price || !imgs) return alert("اكمل البيانات");
+        const data = { title, price, imgs: imgs.split('\n').filter(url => url.trim() !== ""), desc: document.getElementById('pDesc').value, colors: document.getElementById('pColors').value, sizes: document.getElementById('pSizes').value };
         await fetch(`${dbURL}.json`, { method: 'POST', body: JSON.stringify(data) });
         location.reload();
     }
 
-    async function deleteSelected() {
-        const sel = document.querySelectorAll('.admin-check:checked');
-        if(sel.length === 0) return alert("حدد منتج!");
-        if(confirm("حذف؟")) {
-            for (let b of sel) await fetch(`${dbURL}/${b.value}.json`, { method: 'DELETE' });
-            location.reload();
-        }
+    function openProduct(p) {
+        selectedProduct = p; selCol = ""; selSiz = "";
+        const modal = document.getElementById('productModal');
+        const slider = document.getElementById('imageSlider');
+        const dots = document.getElementById('dotsContainer');
+        slider.innerHTML = ""; dots.innerHTML = "";
+        (p.imgs || []).forEach((u, i) => { 
+            slider.innerHTML += `<img src="${u}">`; 
+            dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
+        });
+        document.getElementById('modalTitle').innerText = p.title;
+        document.getElementById('modalPrice').innerText = p.price + " EGP";
+        document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف حالياً للمنتج.";
+        const cDiv = document.getElementById('modalColors'); cDiv.innerHTML = "";
+        if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
+        const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
+        if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
+        document.getElementById('custQty').value = 1;
+        modal.style.display = 'block';
+        setTimeout(() => modal.classList.add('show'), 10);
     }
-</script>
-</body>
-</html>
+
+    function closeModal() {
+        const modal = document.getElementById('productModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    function selectColor(c, el) { document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active')); el.classList.add('active'); selCol = c; }
+    function selectSize(s, el) { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); selSiz = s; }
+    function updateDots() {
+        const slider = document.getElementById('imageSlider');
+        const dots = document.querySelectorAll('.dot');
+        const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+        dots.forEach((d, i) => d.classList.toggle('active', i === Math.abs(index)));
+    }
+
+    async function loadStore() {
+        const res = await fetch(`${dbURL}.json`);
+        const data = await res.json();
+        const grid = document.getElementById('
