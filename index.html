@@ -208,7 +208,7 @@
         var qty = parseInt(document.getElementById('custQty').value);
         if(!selCol || !selSiz || qty < 1) return alert("اختر اللون والمقاس أولاً!");
         var firstImg = "";
-        if (selectedProduct.imgs && selectedProduct.imgs.length > 0) {
+        if (selectedProduct && selectedProduct.imgs && selectedProduct.imgs.length > 0) {
             firstImg = selectedProduct.imgs[0];
         }
         cart.push({ id: Date.now(), title: selectedProduct.title, price: selectedProduct.price, color: selCol, size: selSiz, qty: qty, img: firstImg });
@@ -287,4 +287,4 @@
     function selectColor(c, el) { document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('active'); }); el.classList.add('active'); selCol = c; }
     function selectSize(s, el) { document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); }); el.classList.add('active'); selSiz = s; }
     function updateDots() {
-        var slider = document.getElementById('imageSlider'), dots = document.querySelectorA
+        var slider = document.getElementById('imageSlider'), dots = docu
