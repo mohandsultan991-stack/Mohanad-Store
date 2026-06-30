@@ -94,36 +94,31 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #fff; z-index: 2000; overflow-y: auto; 
             display: none; opacity: 0; transform: translateY(30px);
-            transition: opacity 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94), transform 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
         .show { display: block; opacity: 1; transform: translateY(0); }
 
-        .close-modal { font-size: 1.5rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #f0f0f2; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .close-modal:active { background: #e4e4e7; }
+        .close-modal { font-size: 1.5rem; cursor: pointer; position: absolute; left: 20px; top: 15px; z-index: 2100; background: #f0f0f2; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         
         .slider-wrapper { position: relative; width: 100%; background: #f5f5f7; }
         .slider-container { width: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .slider-container::-webkit-scrollbar { display: none; }
         .slider-container img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; max-height: 400px; }
         
         .dots-container { display: flex; justify-content: center; gap: 6px; padding: 12px 0; position: absolute; bottom: 10px; width: 100%; }
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: 0.2s; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.15); }
         .dot.active { background: var(--main); width: 14px; border-radius: 10px; }
 
         .details-content { padding: 24px 20px 50px 20px; text-align: right; }
         .size-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .size-btn { border: 1px solid #e4e4e7; padding: 10px 20px; cursor: pointer; border-radius: 12px; font-weight: bold; background: #fff; font-size: 0.9rem; transition: all 0.2s; }
+        .size-btn { border: 1px solid #e4e4e7; padding: 10px 20px; cursor: pointer; border-radius: 12px; font-weight: bold; background: #fff; font-size: 0.9rem; }
         .size-btn.active { background: var(--main); color: #fff; border-color: var(--main); }
         
-        .color-dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #e4e4e7; display: inline-block; margin-left: 10px; cursor: pointer; transition: transform 0.2s; }
+        .color-dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #e4e4e7; display: inline-block; margin-left: 10px; cursor: pointer; }
         .color-dot.active { box-shadow: 0 0 0 2px var(--main); transform: scale(1.1); }
 
         .shipping-form input, .shipping-form select, .shipping-form textarea { width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid #e4e4e7; border-radius: 12px; box-sizing: border-box; background: #fff; font-family: inherit; font-size: 0.95rem; }
-        .shipping-form input:focus, .shipping-form select:focus, .shipping-form textarea:focus { border-color: var(--main); outline: none; }
         
-        .add-to-cart-btn { width: 100%; background: var(--main); color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; font-size: 1rem; font-family: inherit; transition: opacity 0.2s; }
-        .add-to-cart-btn:active { opacity: 0.9; }
-        
+        .add-to-cart-btn { width: 100%; background: var(--main); color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; font-size: 1rem; font-family: inherit; }
         .whatsapp-btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 18px; font-weight: bold; border-radius: 14px; cursor: pointer; font-size: 1rem; font-family: inherit; }
 
         .cart-item { display: flex; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 1px solid #f0f0f2; }
@@ -148,6 +143,7 @@
 
 <div class="container" id="productsGrid"></div>
 
+<!-- مودال السلة -->
 <div id="cartModal" class="cart-modal">
     <span class="close-modal" onclick="closeCart()">×</span>
     <div style="padding: 20px; text-align: right; margin-top: 40px;">
@@ -161,7 +157,7 @@
             <input type="tel" id="custPhone" placeholder="رقم الموبايل">
             <select id="custCity">
                 <option value="">اختر المحافظة</option>
-                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
+                <option>العاصمة الإدارية</option><option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
                 <option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option>
                 <option>الإسماعيلية</option><option>المنوفية</option><option>المنيا</option><option>القليوبية</option>
                 <option>الوادي الجديد</option><option>السويس</option><option>الشرقية</option><option>أسوان</option>
@@ -169,12 +165,13 @@
                 <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
                 <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
             </select>
-            <textarea id="custAddress" rows="2" placeholder="العنوان بالتفصيل (المنطقة، الشارع، رقم العمارة)"></textarea>
+            <textarea id="custAddress" rows="2" placeholder="العنوان بالتفصيل"></textarea>
             <button class="whatsapp-btn" onclick="sendOrder()">تأكيد الطلب عبر واتساب</button>
         </div>
     </div>
 </div>
 
+<!-- لوحة التحكم -->
 <div id="adminPanel">
     <h3 style="margin-top:0;">إضافة منتج جديد 🛠️</h3>
     <input type="text" id="pTitle" placeholder="اسم المنتج">
@@ -187,6 +184,7 @@
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; border:none; color:var(--price-color); margin-top:10px; font-family:inherit; cursor:pointer;">إلغاء</button>
 </div>
 
+<!-- مودال المنتج -->
 <div id="productModal" class="product-modal">
     <span class="close-modal" onclick="closeModal()">×</span>
     <div class="slider-wrapper">
@@ -216,6 +214,7 @@
     let cart = [];
     let selectedProduct = null, selCol = "", selSiz = "";
 
+    // تأثير الهيدر السكرول
     let lastScrollTop = 0;
     const header = document.getElementById('mainHeader');
     window.addEventListener('scroll', () => {
@@ -384,4 +383,13 @@
     async function loadStore() {
         try {
             const res = await fetch(`${dbURL}.json`);
-            const d              
+            const data = await res.json();
+            const grid = document.getElementById('productsGrid'); grid.innerHTML = "";
+            if(!data) return;
+            for (let id in data) {
+                const p = data[id];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openProduct(p);
+                card.innerHTML = `
+       
