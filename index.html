@@ -97,7 +97,7 @@
     <h1 class="logo-title">MOHANAD STORE</h1>
 </header>
 
-<!-- شريط العروض المضاف حديثاً -->
+<!-- شريط العروض -->
 <div id="announcementBanner" style="display:none; background:var(--main-gradient); color:#fff; text-align:center; padding:12px; font-weight:bold; font-size:0.95rem; margin:14px; border-radius:16px; box-shadow: 0 4px 12px rgba(255,59,48,0.2);"></div>
 
 <div class="container" id="productsGrid"></div>
@@ -136,10 +136,9 @@
     <textarea id="pImgs" rows="3" placeholder="روابط الصور (رابط في كل سطر)"></textarea>
     <textarea id="pDesc" rows="3" placeholder="وصف المنتج بالتفصيل"></textarea>
     <input type="text" id="pColors" placeholder="الألوان المتاحة (مثال: black, red)">
-    <input type="text" id="pSizes" placeholder="المقاسات المتاحة (مثال: M, L, XL)"></textarea>
+    <input type="text" id="pSizes" placeholder="المقاسات المتاحة (مثال: M, L, XL)">
     <button onclick="saveProduct()" style="width:100%; background:var(--text-dark); color:#fff; padding:15px; border:none; border-radius:14px; font-weight:bold; cursor:pointer; font-family:inherit;">حفظ المنتج</button>
     
-    <!-- قسم التحكم في شريط العروض المضاف حديثاً -->
     <hr style="border:0; border-top:1px solid #e5e5ea; margin:20px 0;">
     <h3 style="margin-top:0;">شريط العروض 📢</h3>
     <input type="text" id="adminAnnounce" placeholder="اكتب العرض هنا (امسح الكلام لإخفائه)">
@@ -166,7 +165,6 @@
             <button class="add-to-cart-btn" onclick="addToCart()">إضافة إلى السلة 🛒</button>
         </div>
 
-        <!-- قسم المنتجات ذات الصلة المضاف حديثاً -->
         <div style="margin-top: 40px; border-top: 2px dashed #e5e5ea; padding-top: 25px;">
             <h3 style="font-weight:900; margin-bottom:15px; color:var(--text-dark);">اكتشف المزيد ✨</h3>
             <div id="relatedProductsGrid" class="container" style="padding:0; margin:0; width:100%;"></div>
@@ -179,7 +177,7 @@
     const myPhone = "201044667187";
     let cart = [];
     let selectedProduct = null, selCol = "", selSiz = "";
-    let allProducts = {}; // متغير جديد لحفظ كل المنتجات عشان نستخدمها في المنتجات ذات الصلة
+    let allProducts = {}; 
 
     function addToCart() {
         const qty = parseInt(document.getElementById('custQty').value);
@@ -203,7 +201,7 @@
     function removeItem(id) { cart = cart.filter(i => i.id !== id); updateCartUI(); }
     
     function openCart() { 
-        window.history.pushState({ modalOpen: true }, ""); // للرجوع من الموبايل
+        window.history.pushState({ modalOpen: true }, ""); 
         document.getElementById('cartModal').style.display = 'block'; 
     }
     function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
@@ -226,7 +224,6 @@
         location.reload();
     }
 
-    // دالة حفظ شريط العروض
     async function saveAnnouncement() {
         const text = document.getElementById('adminAnnounce').value;
         await fetch(`${dbURL}/settings.json`, { method: 'PATCH', body: JSON.stringify({ announcement: text }) });
@@ -243,7 +240,7 @@
     }
 
     function openProduct(p) {
-        window.history.pushState({ modalOpen: true }, ""); // للرجوع من الموبايل
+        window.history.pushState({ modalOpen: true }, ""); 
         
         selectedProduct = p; selCol = ""; selSiz = "";
         const modal = document.getElementById('productModal'), slider = document.getElementById('imageSlider'), dots = document.getElementById('dotsContainer');
@@ -258,12 +255,11 @@
         if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
         document.getElementById('custQty').value = 1; 
 
-        // إضافة المنتجات ذات الصلة
         const relGrid = document.getElementById('relatedProductsGrid');
         relGrid.innerHTML = "";
         for (let id in allProducts) {
             const relP = allProducts[id];
-            if (relP.title === p.title) continue; // تخطي المنتج الحالي
+            if (relP.title === p.title) continue; 
             const card = document.createElement('div');
             card.className = 'card';
             card.onclick = () => openProduct(relP);
@@ -272,7 +268,7 @@
         }
 
         modal.style.display = 'block';
-        modal.scrollTo(0,0); // عشان لما تفتح منتج من المنتجات المقترحة يطلع لفوق
+        modal.scrollTo(0,0); 
     }
 
     function closeModal() { document.getElementById('productModal').style.display = 'none'; }
@@ -286,16 +282,19 @@
 
     async function loadStore() {
         try {
-            // جلب وعرض شريط الإعلانات
             const annRes = await fetch(`${dbURL}/settings.json`);
             const annData = await annRes.json();
             if (annData && annData.announcement && annData.announcement.trim() !== "") {
                 const banner = document.getElementById('announcementBanner');
                 banner.innerText = annData.announcement;
                 banner.style.display = 'block';
-                document.getElementById('adminAnnounce').value = annData.announcement; // يحط الكلام القديم في لوحة التحكم
+                document.getElementById('adminAnnounce').value = annData.announcement; 
             }
 
-            // جلب المنتجات
             const res = await fetch(`${dbURL}/products.json`);
-      
+            const data = await res.json();
+            allProducts = data || {}; 
+            const grid = document.getElementById('productsGrid'); grid.innerHTML = "";
+            if(!data) { grid.innerHTML = `<div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text-muted); font-weight:bold;">لا يوجد منتجات حالياً. افتح الـ الكونسول واكتب show() لإضافة منتجات.</div>`; return; }
+            for (let id in data) {
+                const p = data[id]; const 
