@@ -68,11 +68,10 @@
         .cart-item-info { flex: 1; text-align: right; font-size: 0.9rem; }
         .remove-item { color: var(--price-color); cursor: pointer; font-size: 13px; margin-top: 6px; display: inline-block; font-weight: bold; }
         
-        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 26px; border: 1px solid rgba(0,0,0,0.05); z-index: 3000; width: 90%; max-width: 410px; border-radius: 28px; box-shadow: 0 24px 50px rgba(0,0,0,0.15); text-align: right; }
+        #adminPanel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 26px; border: 1px solid rgba(0,0,0,0.05); z-index: 3000; width: 90%; max-width: 410px; border-radius: 28px; box-shadow: 0 24px 50px rgba(0,0,0,0.15); text-align: right; max-height: 90vh; overflow-y: auto; }
         #adminPanel input, #adminPanel textarea { width: 100%; padding: 13px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #e5e5ea; box-sizing: border-box; background: #f9f9f9; font-family: inherit; }
     </style>
     <script>
-        // تعريف الدالة هنا في البداية يضمن اشتغالها فوراً بالكونسول مهما حصل
         window.show = function() {
             let p = prompt("ادخل الرقم السري للوحة التحكم:");
             if(p === "2026") {
@@ -97,6 +96,9 @@
     <button id="multiDeleteBtn" style="display:none; background:var(--price-color); color:#fff; border:none; padding:10px 16px; border-radius:24px; font-family:inherit; font-weight:bold; cursor:pointer;" onclick="deleteSelected()">حذف 🗑️</button>
     <h1 class="logo-title">MOHANAD STORE</h1>
 </header>
+
+<!-- شريط العروض المضاف حديثاً -->
+<div id="announcementBanner" style="display:none; background:var(--main-gradient); color:#fff; text-align:center; padding:12px; font-weight:bold; font-size:0.95rem; margin:14px; border-radius:16px; box-shadow: 0 4px 12px rgba(255,59,48,0.2);"></div>
 
 <div class="container" id="productsGrid"></div>
 
@@ -136,6 +138,13 @@
     <input type="text" id="pColors" placeholder="الألوان المتاحة (مثال: black, red)">
     <input type="text" id="pSizes" placeholder="المقاسات المتاحة (مثال: M, L, XL)"></textarea>
     <button onclick="saveProduct()" style="width:100%; background:var(--text-dark); color:#fff; padding:15px; border:none; border-radius:14px; font-weight:bold; cursor:pointer; font-family:inherit;">حفظ المنتج</button>
+    
+    <!-- قسم التحكم في شريط العروض المضاف حديثاً -->
+    <hr style="border:0; border-top:1px solid #e5e5ea; margin:20px 0;">
+    <h3 style="margin-top:0;">شريط العروض 📢</h3>
+    <input type="text" id="adminAnnounce" placeholder="اكتب العرض هنا (امسح الكلام لإخفائه)">
+    <button onclick="saveAnnouncement()" style="width:100%; background:var(--accent); color:#fff; padding:15px; border:none; border-radius:14px; font-weight:bold; cursor:pointer; font-family:inherit;">حفظ العرض</button>
+
     <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%; background:none; border:none; color:var(--price-color); margin-top:12px; cursor:pointer; font-weight:bold; font-family:inherit;">إلغاء</button>
 </div>
 
@@ -156,6 +165,12 @@
         <div style="margin-top:35px;">
             <button class="add-to-cart-btn" onclick="addToCart()">إضافة إلى السلة 🛒</button>
         </div>
+
+        <!-- قسم المنتجات ذات الصلة المضاف حديثاً -->
+        <div style="margin-top: 40px; border-top: 2px dashed #e5e5ea; padding-top: 25px;">
+            <h3 style="font-weight:900; margin-bottom:15px; color:var(--text-dark);">اكتشف المزيد ✨</h3>
+            <div id="relatedProductsGrid" class="container" style="padding:0; margin:0; width:100%;"></div>
+        </div>
     </div>
 </div>
 
@@ -164,6 +179,7 @@
     const myPhone = "201044667187";
     let cart = [];
     let selectedProduct = null, selCol = "", selSiz = "";
+    let allProducts = {}; // متغير جديد لحفظ كل المنتجات عشان نستخدمها في المنتجات ذات الصلة
 
     function addToCart() {
         const qty = parseInt(document.getElementById('custQty').value);
@@ -185,7 +201,11 @@
     }
 
     function removeItem(id) { cart = cart.filter(i => i.id !== id); updateCartUI(); }
-    function openCart() { document.getElementById('cartModal').style.display = 'block'; }
+    
+    function openCart() { 
+        window.history.pushState({ modalOpen: true }, ""); // للرجوع من الموبايل
+        document.getElementById('cartModal').style.display = 'block'; 
+    }
     function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
 
     function sendOrder() {
@@ -206,6 +226,14 @@
         location.reload();
     }
 
+    // دالة حفظ شريط العروض
+    async function saveAnnouncement() {
+        const text = document.getElementById('adminAnnounce').value;
+        await fetch(`${dbURL}/settings.json`, { method: 'PATCH', body: JSON.stringify({ announcement: text }) });
+        alert('تم حفظ شريط العروض بنجاح! 📢');
+        location.reload();
+    }
+
     async function deleteSelected() {
         const selected = document.querySelectorAll('.select-box:checked');
         if(confirm("حذف المنتجات؟")) {
@@ -215,6 +243,8 @@
     }
 
     function openProduct(p) {
+        window.history.pushState({ modalOpen: true }, ""); // للرجوع من الموبايل
+        
         selectedProduct = p; selCol = ""; selSiz = "";
         const modal = document.getElementById('productModal'), slider = document.getElementById('imageSlider'), dots = document.getElementById('dotsContainer');
         slider.innerHTML = ""; dots.innerHTML = "";
@@ -226,7 +256,23 @@
         if(p.colors) p.colors.split(',').forEach(c => { cDiv.innerHTML += `<div class="color-dot" style="background:${c.trim()}" onclick="selectColor('${c.trim()}', this)"></div>`; });
         const sDiv = document.getElementById('modalSizes'); sDiv.innerHTML = "";
         if(p.sizes) p.sizes.split(',').forEach(s => { sDiv.innerHTML += `<div class="size-btn" onclick="selectSize('${s.trim()}', this)">${s.trim()}</div>`; });
-        document.getElementById('custQty').value = 1; modal.style.display = 'block';
+        document.getElementById('custQty').value = 1; 
+
+        // إضافة المنتجات ذات الصلة
+        const relGrid = document.getElementById('relatedProductsGrid');
+        relGrid.innerHTML = "";
+        for (let id in allProducts) {
+            const relP = allProducts[id];
+            if (relP.title === p.title) continue; // تخطي المنتج الحالي
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openProduct(relP);
+            card.innerHTML = `<img src="${relP.imgs?.[0] || ''}"><div class="card-info"><h3>${relP.title}</h3><div class="price">${relP.price} EGP</div></div>`;
+            relGrid.appendChild(card);
+        }
+
+        modal.style.display = 'block';
+        modal.scrollTo(0,0); // عشان لما تفتح منتج من المنتجات المقترحة يطلع لفوق
     }
 
     function closeModal() { document.getElementById('productModal').style.display = 'none'; }
@@ -240,18 +286,16 @@
 
     async function loadStore() {
         try {
-            const res = await fetch(`${dbURL}/products.json`);
-            const data = await res.json();
-            const grid = document.getElementById('productsGrid'); grid.innerHTML = "";
-            if(!data) { grid.innerHTML = `<div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text-muted); font-weight:bold;">لا يوجد منتجات حالياً. افتح الـ الكونسول واكتب show() لإضافة منتجات.</div>`; return; }
-            for (let id in data) {
-                const p = data[id]; const card = document.createElement('div'); card.className = 'card'; card.onclick = () => openProduct(p);
-                card.innerHTML = `<input type="checkbox" class="select-box" value="${id}" style="display:none; position:absolute; top:12px; right:12px; z-index:10; width:18px; height:18px;" onclick="event.stopPropagation()"><img src="${p.imgs?.[0] || ''}"><div class="card-info"><h3>${p.title}</h3><div class="price">${p.price} EGP</div></div>`;
-                grid.appendChild(card);
+            // جلب وعرض شريط الإعلانات
+            const annRes = await fetch(`${dbURL}/settings.json`);
+            const annData = await annRes.json();
+            if (annData && annData.announcement && annData.announcement.trim() !== "") {
+                const banner = document.getElementById('announcementBanner');
+                banner.innerText = annData.announcement;
+                banner.style.display = 'block';
+                document.getElementById('adminAnnounce').value = annData.announcement; // يحط الكلام القديم في لوحة التحكم
             }
-        } catch(e) { console.error(e); }
-    }
-    loadStore();
-</script>
-</body>
-</html>
+
+            // جلب المنتجات
+            const res = await fetch(`${dbURL}/products.json`);
+      
