@@ -116,23 +116,6 @@
         .checkbox-del { display: none; position: absolute; top: 12px; right: 12px; z-index: 50; width: 18px; height: 18px; }
         .del-bar-btn { display: none; background: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
     </style>
-    
-    <script>
-        // تعريف دالة show() في أول السكريبت مباشرة لمنع مشكلة show is not defined نهائياً
-        window.show = function() {
-            var key = prompt("ادخل كلمة مرور التاجر:");
-            if (key === "2026") {
-                document.getElementById('adminBox').style.display = 'block';
-                document.getElementById('delBarBtn').style.display = 'block';
-                var boxes = document.querySelectorAll('.checkbox-del');
-                for(var i=0; i<boxes.length; i++) { boxes[i].style.display = 'block'; }
-                return "مرحباً يا مهند، تم فتح صلاحيات الإدارة ولوحة التحكم بنجاح 🛠️";
-            } else {
-                alert("الرمز السري خطأ!");
-                return "خطأ في الدخول";
-            }
-        };
-    </script>
 </head>
 <body>
 
@@ -149,6 +132,7 @@
     <div class="products-grid" id="productsLayout"></div>
 </div>
 
+<!-- مودال سلة المشتريات -->
 <div id="cartModal" class="modal">
     <div class="close-modal" onclick="closeCartView()">×</div>
     <div class="cart-view">
@@ -176,6 +160,7 @@
     </div>
 </div>
 
+<!-- لوحة التاجر لإضافة المنتجات -->
 <div id="adminBox">
     <h3>إضافة قطعه جديدة للكوليكشن</h3>
     <div class="form-box" style="margin: 0;">
@@ -183,13 +168,14 @@
         <input type="number" id="admPrice" placeholder="السعر (EGP)">
         <textarea id="admImgs" rows="3" placeholder="روابط الصور (ضع رابط في كل سطر جديد)"></textarea>
         <textarea id="admDesc" rows="2" placeholder="وصف وتفاصيل القطعة"></textarea>
-        <input type="text" id="admColors" placeholder="الألوان المتاحة (مثال: black, white, gray)"></input>
-        <input type="text" id="admSizes" placeholder="المقاسات المتوفرة (مثال: S, M, L, XL)"></input>
+        <input type="text" id="admColors" placeholder="الألوان المتاحة (مثال: black, white, gray)">
+        <input type="text" id="admSizes" placeholder="المقاسات المتوفرة (مثال: S, M, L, XL)">
         <button class="action-btn" onclick="saveNewProduct()">حفظ ونشر القطعة</button>
         <button class="action-btn" style="background:none; color:#ff3b30; margin-top:5px;" onclick="document.getElementById('adminBox').style.display='none'">إلغاء</button>
     </div>
 </div>
 
+<!-- مودال تفاصيل المنتج المعروض -->
 <div id="productModal" class="modal">
     <div class="close-modal" onclick="closeProductView()">×</div>
     <div class="slider-box">
@@ -225,6 +211,21 @@
     var storeProducts = {};
     var currentId = null, currentObj = null, pickedColor = "", pickedSize = "";
     
+    // دالة show لفتح لوحة التحكم
+    window.show = function() {
+        var key = prompt("ادخل كلمة مرور التاجر:");
+        if (key === "2026") {
+            document.getElementById('adminBox').style.display = 'block';
+            document.getElementById('delBarBtn').style.display = 'block';
+            var boxes = document.querySelectorAll('.checkbox-del');
+            for(var i=0; i<boxes.length; i++) { boxes[i].style.display = 'block'; }
+            return "مرحباً يا مهند، تم فتح صلاحيات الإدارة ولوحة التحكم بنجاح 🛠️";
+        } else {
+            alert("الرمز السري خطأ!");
+            return "خطأ في الدخول";
+        }
+    };
+
     // سكريبت اختفاء وظهور الهيدر مع السكرول
     var lastScrollTop = 0;
     var headerEl = document.getElementById('mainHeader');
@@ -238,7 +239,7 @@
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     }, false);
 
-    // كود جلب وعرض البيانات الأصلي المستقر
+    // كود جلب وعرض البيانات المستقر
     function loadStoreData() {
         fetch(firebaseURL + "/products.json").then(function(r) { return r.json(); }).then(function(data) {
             storeProducts = data || {};
@@ -373,4 +374,4 @@
     function addProductToCart() {
         var qty = parseInt(document.getElementById('mQty').value);
         if(!pickedColor || !pickedSize || qty < 1) return alert("برجاء اختيار اللون والمقاس المطلوب أولاً!");
- 
+        var mainImg = (currentObj.imgs && currentObj.imgs.len
